@@ -6,4 +6,4 @@ An online GUI designer for LittlevGL
 * WASM part provides a Simulator.
 * The front-end component library provides a way to control Simulator: create,delete or modify a widget. Include attribute editor, style editor and animation editor.
 * Generate final code by javascript, Use `Blob` to save file.
-* Continue your work in last closed window: By `cookie`
+* Continue your work in last closed window: By `Web Storage`
