@@ -1,0 +1,60 @@
+<!doctype html>
+<!---->
+<html>
+  <head>
+	<meta charset="utf-8">
+    <style>
+		body {
+			width: 100%;
+			box-sizing: border-box;
+			padding: 0;
+			margin: 0;
+			text-align: center;
+		}
+		a { white-space: nowrap; }
+		table {
+			display: inline-block;
+		}
+		#mp_js_stdout {
+			display: inline-block;
+			max-width: 90%;
+			height: 20%;
+			max-height: 600px;
+			vertical-align: middle;
+		}
+		#canvas {
+			border: 4px grey solid;
+			border-radius: 4px;
+			vertical-align: middle;
+		};
+    </style>
+	<link rel="stylesheet" href="node_modules/xterm/dist/xterm.css" />
+    <script src="node_modules/xterm/dist/xterm.js"></script>
+	<script src="node_modules/xterm/dist/addons/fit/fit.js"></script>
+  </head>
+  <body>
+	<!-- <h1>LittlevGL+MicroPython simulator</h1>
+	<p>
+	This is the JavaScript version of MicroPython, plus the LittlevGL bindings available at
+	<a href="https://github.com/littlevgl/lv_binding_micropython">https://github.com/littlevgl/lv_binding_micropython</a>.
+	<br>
+	You can type your own Python code into the prompt in the usual way.
+	<br>
+	For examples, see the README for the MicroPython binding. -->
+
+    <div id="mp_js_stdout"></div>
+
+    <canvas id="canvas" width="480" height="320" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+
+	<p>
+	<button onclick="createWidget('btn','scr');">BTN</button>
+	<button onclick="createWidget('label','scr');">LABEL</button>
+	<button onclick="createWidget('bar','scr');">BAR</button>
+	<button onclick="createWidget('gauge','scr');">GAUGE</button>
+	<!-- scripts -->
+	<script src="lvgl_mp.js"></script>
+	<script src="env_init.js"></script>
+	<script src="creator.js"></script>
+  </body>
+</html>
+
