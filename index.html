@@ -1,0 +1,125 @@
+<!doctype html>
+<!---->
+<html lang="en">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <head>
+    <style>
+		/* #mp_js_stdout {
+			display: inline-block;
+			max-width: 90%;
+			height: 20%;
+			max-height: 600px;
+			vertical-align: middle;
+		} */
+		#canvas {
+			border: 2px grey solid;
+			border-radius: 6px;
+			vertical-align: middle;
+			width: 600px;
+			height: 400px;
+		};
+    </style>
+	<link rel="stylesheet" href="lib/xterm/dist/xterm.css" />
+	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.1.0/css/bootstrap.min.css">
+
+  </head>
+  <body>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<a class="navbar-brand" href="#">WALV</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		  <span class="navbar-toggler-icon"></span>
+		</button>
+	  
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		  <ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+			  <a class="nav-link" href="#">by kaiakz</a>
+			</li>
+			<li class="nav-item dropdown">
+			  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Link
+			  </a>
+			  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<a class="dropdown-item" href="https://littlevgl.com/" target="_blank">LittlevGL</a>
+				<a class="dropdown-item" href="https://docs.littlevgl.com/en/html/index.html" target="_blank">Document</a>
+				<a class="dropdown-item" href="https://forum.littlevgl.com/" target="_blank">Forum</a>
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="https://github.com/kaiakz/walv/" target="_blank">Project On Github</a>
+			  </div>
+			</li>
+			<li class="nav-item">
+			  <a id="repl_btn" class="nav-link disabled" href="#">Python REPL</a>
+			</li>
+		  </ul>
+		  <form class="form-inline my-2 my-lg-0">
+			<button class="btn btn-outline-danger mr-sm-2" type="button" id="gencode">Generate!</button>  
+			<!-- <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+			<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> -->
+		  </form>
+		</div>
+	  </nav>
+	  
+	  
+
+	<div class="container-fluid">
+		<div class="row" >
+			<div class="col-md-2">
+				<div id="toolbox" class="list-group">
+					<h3><span class="badge badge-primary">Widget Box</span></h3>
+					<button type="button" class="list-group-item list-group-item-action" >Btn</button>
+					<button type="button" class="list-group-item list-group-item-action" >Label</button>
+					<button type="button" class="list-group-item list-group-item-action" >Bar</button>
+					<button type="button" class="list-group-item list-group-item-action" >Gauge</button>
+					<button type="button" class="list-group-item list-group-item-action" >DDList</button>
+					<button type="button" class="list-group-item list-group-item-action" >TA</button>
+					<button type="button" class="list-group-item list-group-item-action" >SW</button>
+					<button type="button" class="list-group-item list-group-item-action" >Slider</button>
+					<button type="button" class="list-group-item list-group-item-action" >Roller</button>	
+					<button type="button" class="list-group-item list-group-item-action" >Calendar</button>				
+					<button type="button" class="list-group-item list-group-item-action" >Led</button>				
+					<button type="button" class="list-group-item list-group-item-action" >MBox</button>				
+					<button type="button" class="list-group-item list-group-item-action" >Page</button>
+					<button type="button" class="list-group-item list-group-item-action" >Table</button>
+				</div>				
+			</div>
+
+			<div class="col-md-6" id="mp_js_stdout">
+				<canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+				<button type="button" class="btn btn-warning" id="screenshot">Screenshot!</button>
+			</div>
+
+			<div id="setting" class="col-md-4">
+				<h3><span class="badge badge-pill badge-success">Select A Widget</span></h3>
+				<div class="list-group" id="list-widget" role="tablist">
+					<a class="list-group-item list-group-item-action " id="list-widget-item" data-toggle="list" href="#" role="tab" aria-controls="home">NONE</a>
+					<a class="list-group-item list-group-item-action active" id="list-widget-item" data-toggle="list" href="#" role="tab" aria-controls="profile">scr</a>
+				</div>
+				<h3><span class="badge badge-pill badge-info">Attribute</span></h3>
+				<div id="showAttr">
+					
+				</div>
+			</div>
+		</div>
+		<div id="mpy_repl" class="row navbar-inverse navbar-fixed-bottom"></div>
+	</div>
+    
+
+    
+
+
+	<!-- scripts -->
+    <script src="lib/xterm/dist/xterm.js"></script>
+	<script src="lib/xterm/dist/addons/fit/fit.js"></script>
+	<script src="lib/FileSaver/FileSaver.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+	<script src="lvgl_mp.js"></script>
+	<script src="env_init.js"></script>
+	<script src="creator.js"></script>
+  </body>
+</html>
+
