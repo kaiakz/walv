@@ -83,10 +83,10 @@ window.onload = function() {
     mp_js_stdout = document.getElementById('mp_js_stdout');
     mp_js_stdout.value = "";
 
-    // Terminal.applyAddon(fit);
-    // term = new Terminal();    
-    // term.open(mp_js_stdout);
-    // term.fit();
+    Terminal.applyAddon(fit);
+    term = new Terminal();    
+    term.open(mpy_repl);
+    term.fit();
     
     /*Initialize MicroPython itself*/
     mp_js_init(8 * 1024 * 1024); 
@@ -111,22 +111,23 @@ window.onload = function() {
         }
     });
 
+
     /*Setup printing event handler*/
 
     mp_js_stdout.addEventListener('print', function(e) {
         text = e.data;
-        // term.write(text);
+        term.write(text);
 
         stdoutHandler(text, stdout_data);
     }, false);
 
-    // /*Setup key input handler */
-    // term.on('data', function(key, e) {
-    //     // console.log(key);
-    //     for(var i = 0; i < key.length; i++) {
-    //         mp_js_process_char(key.charCodeAt(i));
-    //     }
-    // });
+    /*Setup key input handler */
+    term.on('data', function(key, e) {
+        // console.log(key);
+        for(var i = 0; i < key.length; i++) {
+            mp_js_process_char(key.charCodeAt(i));
+        }
+    });
 
     /* Run init script */
     for(var i = 0;i < Envir.length;i++){
