@@ -25,33 +25,55 @@ Module.canvas = (function() {
     return canvas;
 })();
 
-var lines = [
+var Envir = [
     "import ujson",
     "import lvgl as lv",
     "lv.init()",
     "import SDL",
     "SDL.init()",
     /* Register SDL display driver. */
+    "disp_buf1 = lv.disp_buf_t()",
+    "buf1_1 = bytes(960*10)",
+    "lv.disp_buf_init(disp_buf1,buf1_1, None, len(buf1_1)//4)",
     "disp_drv = lv.disp_drv_t()",
     "lv.disp_drv_init(disp_drv)",
-    "disp_drv.disp_flush = SDL.monitor_flush",
-    "disp_drv.disp_fill = SDL.monitor_fill",
-    "disp_drv.disp_map = SDL.monitor_map",
+    "disp_drv.buffer = disp_buf1",
+    "disp_drv.flush_cb = SDL.monitor_flush",
+    "disp_drv.hor_res = 480",
+    "disp_drv.ver_res = 320",
     "lv.disp_drv_register(disp_drv)",
     /*Regsiter SDL mouse driver*/
     "indev_drv = lv.indev_drv_t()",
     "lv.indev_drv_init(indev_drv)",
     "indev_drv.type = lv.INDEV_TYPE.POINTER;",
-    "indev_drv.read = SDL.mouse_read;",
+    "indev_drv.read_cb = SDL.mouse_read;",
     "lv.indev_drv_register(indev_drv);",
     /* Create a screen with a button and a label */
     "scr = lv.obj()",
-    // "btn = lv.btn(scr)",
-    // "btn.align(lv.scr_act(), lv.ALIGN.CENTER, 0, 0)",
-    // "label = lv.label(btn)",
-    // "label.set_text('Button')",
     /* Load the screen */
     "lv.scr_load(scr)",
+    "baseAttr = dir(lv.obj)"
+];
+
+/* Define special function for python*/
+var defFun = [
+    //Get and send json
+    "def getobjattr(obj, id):",
+    "    d={}",
+    "    d['id']=id",
+    "    for i in dir(obj):",
+    "        if 'get_' in i:",
+    "            try:",
+    "                ret = eval(id + '.' + i + '()')",
+    "                if isinstance(ret, (int,float,str,bool)):",
+    "                    d[i] = ret",
+    "            except:",
+    "                pass",
+    "    print(ujson.dumps(d))",
+    //Determine what event is
+    "def whatEvent(obj, id, event):",
+    "    if event == lv.EVENT.DRAG_END:",
+    "        getobjattr(obj, id)"
 ];
 
 /*Initialization function*/
@@ -82,7 +104,10 @@ window.onload = function() {
 
         set: function(value){
             strJson = value;
-            console.log(JSON.parse(strJson))
+            json = JSON.parse(strJson);
+            // console.log(json);
+            updateShow(json);
+            Widget.updateDict(json['id'], json);
         }
     });
 
@@ -95,18 +120,19 @@ window.onload = function() {
         stdoutHandler(text, stdout_data);
     }, false);
 
-    /*Setup key input handler */
-    term.on('data', function(key, e) {
-        // console.log(key);
-        for(var i = 0; i < key.length; i++) {
-            mp_js_process_char(key.charCodeAt(i));
-        }
-    });
+    // /*Setup key input handler */
+    // term.on('data', function(key, e) {
+    //     // console.log(key);
+    //     for(var i = 0; i < key.length; i++) {
+    //         mp_js_process_char(key.charCodeAt(i));
+    //     }
+    // });
 
     /* Run init script */
-    for(var i = 0;i < lines.length;i++){
-        mp_js_do_str(lines[i]);
+    for(var i = 0;i < Envir.length;i++){
+        mp_js_do_str(Envir[i]);
     }
+    mp_js_do_str(defFun.join('\n'));
 
     /* Run custom script if passed */
     // var custom = undefined;
@@ -125,12 +151,12 @@ window.onload = function() {
     var the_mp_handle_pending = Module.cwrap('mp_handle_pending', null);
     function handle_pending() {
         the_mp_handle_pending();
-        setTimeout(handle_pending, 20); // should call lv_task_handler() 
+        setTimeout(handle_pending, 10); // should call lv_task_handler() 
     }
     
     /*Initialize the REPL.*/
-    // mp_js_init_repl();
-
+    mp_js_init_repl();
+    document.title = "WALV";
     /*Start the main loop, asynchronously.*/
     handle_pending();
 
@@ -152,6 +178,9 @@ function stdoutHandler(ch, a){
         }
         arr.splice(0, arr.length);
     }else{
-        arr.push(ch);
+        // if(ch != '>'){
+            arr.push(ch);
+        // }
+        
     }
 }
