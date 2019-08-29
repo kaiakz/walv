@@ -47,9 +47,7 @@ function createWidget(type, strPar) {
     SRCSign.push("lv_obj_t * " + id + " = lv_" + type + "_create(" + id + ");");
 }
 
-// function label_create(par)
-
-//This is 
+//This is a python function to get an object info
 // def getobjattr(obj):
 //     l=dir(scr)
 //     d={}
@@ -62,11 +60,14 @@ function createWidget(type, strPar) {
 //             except:
 //                 pass
 // print(ujson.dumps(d))
+
+
 var nowID = '';
 
 function updateShow(json){
     $("#showAttr").empty();
-    var inputGr = "<div class='input-group mb-3'><div class='input-group-prepend'><span class='input-group-text'>@@</span></div><input id='attrbox' type='text' class='form-control' placeholder=@@ value=##></input></div>";
+    let inputGr = "<div class='input-group mb-3'><div class='input-group-prepend'><span class='input-group-text'>@@</span></div><input id='attrbox' type='text' class='form-control' placeholder=@@ value=##></input></div>";
+
     for(let key in json){
         if(key == 'id'){
             nowID = json[key];
@@ -74,6 +75,10 @@ function updateShow(json){
         var strHtml = inputGr;
         $("#showAttr").append(strHtml.replace('@@', key).replace('@@', key).replace('##', json[key]).replace('get_', '').replace('get_', 'set_'));
     }
+
+    //Highlight object
+    let ctx = document.getElementById("canvas").getContext("2d");
+    ctx.strokeRect(json["get_x"], json["get_y"], json["get_width"], json["get_height"]);
 }
 
 
