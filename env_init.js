@@ -160,7 +160,8 @@ window.onload = function() {
     document.title = "WALV";
     /*Start the main loop, asynchronously.*/
     handle_pending();
-
+    
+    // $("#mpy_repl").hide();
 }
 
 function stdoutHandler(ch, a){
