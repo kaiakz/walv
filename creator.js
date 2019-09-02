@@ -44,7 +44,7 @@ function createWidget(type, strPar) {
     }
     mp_js_do_str(code.join('\n'));
     pushToList(id);
-    SRCSign.push("lv_obj_t * " + id + " = lv_" + type + "_create(" + id + ");");
+    SRCSign.push("lv_obj_t * " + id + " = lv_" + type + "_create(" + id + ", NULL);");
 }
 
 //This is a python function to get an object info
