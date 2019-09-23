@@ -1,3 +1,15 @@
+/*
+    lvgl_mp.js provides some ways to access:
+        mp_js_init
+        mp_js_do_str
+        mp_js_init_repl
+        mp_js_process_char
+        mp_js_stdout
+    
+walv uses mp_js_do_str to demand WASM(micropython), and gets data via mp_js_stdout
+*/
+
+
 /*Write text to the terminal */
 // function sendText(text) {
 //     var print = new Event('print');
@@ -92,11 +104,11 @@ window.onload = function() {
     mp_js_init(8 * 1024 * 1024); 
 
     var stdout_data = {
-        tmp : [],
-        strJson : 0,
-        
+        tmpChArr : [],
+        strJson : 0
     };
 
+    //If the strJson was changes, the div 'showAttr' will load the new json
     Object.defineProperty(stdout_data, 'strJson', {
         get: function(){
             return strJson;
@@ -164,15 +176,17 @@ window.onload = function() {
     // $("#mpy_repl").hide();
 }
 
-function stdoutHandler(ch, a){
+//Get the useful data from mp_js_stdout
+function stdoutHandler(ch, data_obj){
     if(ch == '\r' || ch == '\n')
     { 
-        arr = a.tmp;
+        arr = data_obj.tmpChArr;   //Not a local var
         
         if(arr.length != 0){
+            //If arr is a comlete JSON string
             if(arr[0] == '[' || arr[0] == '{'){
                 if (arr[arr.length - 1] == ']' || arr[arr.length - 1] == '}') {
-                    a.strJson = arr.join('');
+                    data_obj.strJson = arr.join('');
                 }
             }else{
                 console.log(arr.join(''));
