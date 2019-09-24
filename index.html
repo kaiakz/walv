@@ -20,7 +20,7 @@
 			height: 400px;
 		};
     </style>
-	<link rel="stylesheet" href="lib/xterm/dist/xterm.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/xterm.css" />
 	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.1.0/css/bootstrap.min.css">
 
   </head>
@@ -89,10 +89,12 @@
 			<div class="col-md-6" id="mp_js_stdout">
 				<canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
 				<button type="button" class="btn btn-warning" id="screenshot">Screenshot!</button>
+				<div id="mpy_repl" class="row navbar-inverse navbar-fixed-bottom" style="margin-top: 20px"></div>
+
 			</div>
 
 			<div id="setting" class="col-md-4" style="height: 93vh;overflow: scroll">
-				<h3><span class="badge badge-pill badge-success">Select A Widget</span></h3>
+				<h3><span class="badge badge-pill badge-success">Select A Parent-Widget For</span></h3>
 				<div class="list-group" id="list-widget" role="tablist" >
 					<a class="list-group-item list-group-item-action " id="list-widget-item" data-toggle="list" href="#" role="tab">NONE</a>
 					<a class="list-group-item list-group-item-action active" id="list-widget-item" data-toggle="list" href="#" role="tab">scr</a>
@@ -103,14 +105,13 @@
 				</div>
 			</div>
 		</div>
-		<div id="mpy_repl" class="row navbar-inverse navbar-fixed-bottom"></div>
 	</div>
 	
 	
 	<!-- scripts -->
-    <script src="lib/xterm/dist/xterm.js"></script>
-	<script src="lib/xterm/dist/addons/fit/fit.js"></script>
-	<script src="lib/FileSaver/FileSaver.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/xterm.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/addons/fit/fit.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
 	<script src="https://cdn.bootcss.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
