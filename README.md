@@ -1,12 +1,13 @@
 # walv
-An Online, WYSIWYG GUI designer for LittlevGL.
+An Online, WYSIWYG GUI designer for LittlevGL. Cross-platform supported(Even Android and IOS).
 ## [Try it online!](https://kaiakz.github.io/walv/index.html)
+Make sure your browser is the latest version(Chrome, Firefox and Safari). 
 
 ![gif of walv](https://user-images.githubusercontent.com/51747223/63927840-1b5a3780-ca81-11e9-8073-e033e52c7c1e.gif)
 
 ## Alibaba Summer of Code 2019 : [AliOS-Things](https://github.com/alibaba/AliOS-Things/)
 ### Old Version : [lv_gui_designer](https://github.com/kaiakz/lv_gui_designer)
-This repository continues to being used for improvements and further development.
+This repository continues to being used for improvements and further development. Vuejs version is coming.
 
 ## Feature
 * Just a static webpage, you need to use it with **the latest browser**(FireFox, Chrome...even IOS Safari).
@@ -15,7 +16,7 @@ This repository continues to being used for improvements and further development
 * Highlight the selected widget.
 * Screenshot.
 * Set attribute(postion, size, click, etc).
-* Code Preview : monaco-editor.
+* Code Preview : ACE-Editor.
 * TFT_simulator can be customized(size), supports mutiple windows.(To do)
 * Style and Animation Editor(planning).
 * Save and load project. The tool will save your project automatically, and could restore your work from the last closed window.
