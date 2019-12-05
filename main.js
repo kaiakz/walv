@@ -68,8 +68,9 @@ window.onload = function() {
         watch: {
             str_json: function(val) {
                 try {
-                    currJSON = JSON.parse(this.str_json);
-                    console.log(currJSON);                    
+                    // currJSON = JSON.parse(this.str_json);
+                    this.currJSON = Object.assign({}, JSON.parse(this.str_json))
+                    console.log(this.currJSON);                    
                 } catch (error) {
                     console.log(error);
                 }
@@ -172,4 +173,35 @@ function mpylv_init(vm) {
 
     /*Start the main loop, asynchronously.*/
     handle_pending();
+}
+
+var count = 0;
+
+//Parametres are the String type
+function createWidget(type, strPar) {
+    var id = getID(type);
+    var par = strPar;
+    if(strPar == 'none'){
+        par = '';
+    }
+    console.log(id);
+    var code = [
+        id + " = lv." + type + "(" + par + ")",
+        id + ".set_drag(1)",
+        id + ".set_protect(lv.PROTECT.PRESS_LOST)",
+        "print(getobjattr(" + id + ",\'" + id + "\'))",
+        id + ".set_event_cb(lambda obj=None, event=-1, name=\'" + id + '\'' + ", real_obj =" + id + " : EventCB(real_obj, name, event))"
+    ];
+    var complexWidgets = ['ddlist', 'page', 'roller'];
+    if (complexWidgets.indexOf(type) != -1) {
+        code.push(id + ".get_child(None).set_drag_parent(1)");
+    }
+    mp_js_do_str(code.join('\n'));
+    // pushToList(id);
+    // SRCSign.push("lv_obj_t * " + id + " = lv_" + type + "_create(" + id + ", NULL);");
+}
+
+function getID(type){
+    var id = type + (this.count++).toString(16);
+    return id;
 }

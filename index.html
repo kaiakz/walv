@@ -103,7 +103,7 @@
 						<el-radio-button label="top">Sample</el-radio-button>
 						</el-radio-group>
 						<div style="margin: 20px;"></div>
-						<el-form label-width="80px">
+						<!-- <el-form label-width="80px">
 						<el-form-item label="Name">
 							<el-input></el-input>
 						</el-form-item>
@@ -113,7 +113,12 @@
 						<el-form-item label="Name">
 							<el-input></el-input>
 						</el-form-item>	
-						</el-form>
+						</el-form> -->
+						<ul>
+							<li v-for="(value, key) in currJSON">
+							  	{{ key }} - {{ value }}
+							</li>
+						</ul>
 					</div>
 					</el-aside>
 				</el-container>
