@@ -63,7 +63,8 @@ window.onload = function() {
             str_json: "",
             mask: false,
             currJSON: {},
-            Widget: []
+            Widget: [],
+            term_show: true
         },
         watch: {
             str_json: function(val) {

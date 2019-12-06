@@ -85,15 +85,19 @@
 							</el-tab-pane>
 						</el-tabs>
 
-						<div style="margin: 30px;"></div>
-						<el-tabs type="card">
+						<div style="margin: 30px;">
+							<i class="el-icon-toilet-paper">REPL Terminal</i>
+							<el-switch v-model="term_show">
+							</el-switch>
+						</div>
+						<!-- <el-tabs type="card">
 							<el-tab-pane label="Termial">
 							</el-tab-pane>
 							<el-tab-pane label="Log">Log Here</el-tab-pane>
 							<el-tab-pane label="Some">Some</el-tab-pane>
 							<el-tab-pane label="History">History</el-tab-pane>
-						</el-tabs>
-					<div id="mpy_repl" style="height:270px"></div>						
+						</el-tabs> -->
+					<div id="mpy_repl" v-show="term_show" style="height:270px"></div>						
 					</el-main>
 					<el-aside>
 					<div style="margin-top : 20px">
