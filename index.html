@@ -51,8 +51,11 @@
 				</el-header>
 				
 				<el-container>
-					<el-aside width="200px">
-						<div style="margin-top: 20px"></div>
+					<el-aside width="230px">
+						<div style="margin-top: 20px;text-align: center">
+							<el-cascader :options="options" :show-all-levels="false"></el-cascader>
+							<el-button round type="primary">CREATE</el-button>
+						</div>
 						<!-- <el-tree
 						:data="data"
 						node-key="id"
