@@ -19,7 +19,7 @@
 				height: 400px;
 			};
 		</style>
-		<link rel="stylesheet" href="https://unpkg.com/element-ui@2.12.0/lib/theme-chalk/index.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.13.0/lib/theme-chalk/index.css">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/xterm.css" />
 		
 	</head>
@@ -53,8 +53,8 @@
 				<el-container>
 					<el-aside width="230px">
 						<div style="margin-top: 20px;text-align: center">
-							<el-cascader :options="options" :show-all-levels="false"></el-cascader>
-							<el-button round type="primary">CREATE</el-button>
+							<el-cascader :options="options" :show-all-levels="false" :props="props" v-model="selected_type"></el-cascader>
+							<el-button round type="primary" @click="Creator">CREATE</el-button>
 						</div>
 						<!-- <el-tree
 						:data="data"
@@ -135,8 +135,8 @@
 		
 		
 		<!-- scripts -->
-		<script src="https://unpkg.com/vue/dist/vue.js"></script>	
-		<script src="https://unpkg.com/element-ui@2.12.0/lib/index.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>	
+		<script src="https://cdn.jsdelivr.net/npm/element-ui@2.13.0/lib/index.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/xterm.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/addons/fit/fit.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.6/ace.js" type="text/javascript" charset="utf-8"></script>

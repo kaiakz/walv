@@ -1,8 +1,25 @@
 
 var vm = null;
 
+const Widgets_opt = [{
+    value: 'basic',
+    label: 'Basic',
+    children: [
+        {
+            value: 'btn',
+            label: "Button"            
+        },
+        {
+            value: 'label',
+            label: "Label",
+        }
+    ]
+}]
+
+
+
 //The Python code to Initialize the environment
-var lvEnv = [
+const lvEnv = [
     "import ujson",
     "import lvgl as lv",
     "lv.init()",
@@ -33,7 +50,7 @@ var lvEnv = [
 ];
 
 /* Define special function for python*/
-var defFun = [
+const defFun = [
     //Get and send JSON format text
     "def getobjattr(obj, id):",
     "    d={}",
@@ -64,6 +81,14 @@ window.onload = function() {
             mask: false,
             currJSON: {},
             Widget: [],
+
+            //Creator
+            options: Widgets_opt,
+            props: {emitPath: false, expandTrigger: 'hover'},
+            selected_type: "",
+            widget_count: 0,
+
+            //Terminal
             term_show: true
         },
         watch: {
@@ -78,7 +103,7 @@ window.onload = function() {
             }
         },
         methods: {
-            handle_stdout: function(text){
+            handle_stdout: function(text) {
                 if(text == '\x15')      //End: '\x15'
                 {
                     this.mask = false;
@@ -99,6 +124,46 @@ window.onload = function() {
                     this.buffer.splice(0, this.buffer.length);
                 }
                 return text;          
+            },
+
+            Creator: function() {
+                if (this.selected_type == "") {
+                    this.$message(                    {
+                        message: 'Please Select A Type',
+                        type: 'warning'
+                    });
+                } else {
+                    this.createWidget(this.selected_type, "scr");
+                }
+            },
+
+            createWidget: //Parametres are the String type
+            function(type, strPar) {
+                var id = this.getID(type);
+                var par = strPar;
+                if(strPar == 'none'){
+                    par = '';
+                }
+                console.log(id);
+                var code = [
+                    id + " = lv." + type + "(" + par + ")",
+                    id + ".set_drag(1)",
+                    id + ".set_protect(lv.PROTECT.PRESS_LOST)",
+                    "print(getobjattr(" + id + ",\'" + id + "\'))",
+                    id + ".set_event_cb(lambda obj=None, event=-1, name=\'" + id + '\'' + ", real_obj =" + id + " : EventCB(real_obj, name, event))"
+                ];
+                const complexWidgets = ['ddlist', 'page', 'roller'];
+                if (complexWidgets.indexOf(type) != -1) {
+                    code.push(id + ".get_child(None).set_drag_parent(1)");
+                }
+                mp_js_do_str(code.join('\n'));
+                // pushToList(id);
+                // SRCSign.push("lv_obj_t * " + id + " = lv_" + type + "_create(" + id + ", NULL);");
+            },
+
+            getID: function(type) {
+                var id = type + (this.widget_count++).toString(16);
+                return id;
             }
         }
    
@@ -174,35 +239,4 @@ function mpylv_init(vm) {
 
     /*Start the main loop, asynchronously.*/
     handle_pending();
-}
-
-var count = 0;
-
-//Parametres are the String type
-function createWidget(type, strPar) {
-    var id = getID(type);
-    var par = strPar;
-    if(strPar == 'none'){
-        par = '';
-    }
-    console.log(id);
-    var code = [
-        id + " = lv." + type + "(" + par + ")",
-        id + ".set_drag(1)",
-        id + ".set_protect(lv.PROTECT.PRESS_LOST)",
-        "print(getobjattr(" + id + ",\'" + id + "\'))",
-        id + ".set_event_cb(lambda obj=None, event=-1, name=\'" + id + '\'' + ", real_obj =" + id + " : EventCB(real_obj, name, event))"
-    ];
-    var complexWidgets = ['ddlist', 'page', 'roller'];
-    if (complexWidgets.indexOf(type) != -1) {
-        code.push(id + ".get_child(None).set_drag_parent(1)");
-    }
-    mp_js_do_str(code.join('\n'));
-    // pushToList(id);
-    // SRCSign.push("lv_obj_t * " + id + " = lv_" + type + "_create(" + id + ", NULL);");
-}
-
-function getID(type){
-    var id = type + (this.count++).toString(16);
-    return id;
 }
