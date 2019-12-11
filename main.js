@@ -1,20 +1,92 @@
 
 var vm = null;
 
-const Widgets_opt = [{
-    value: 'basic',
-    label: 'Basic',
-    children: [
-        {
-            value: 'btn',
-            label: "Button"            
-        },
-        {
-            value: 'label',
-            label: "Label",
-        }
-    ]
-}]
+const Widgets_opt = [
+    {
+        value: 'obj',
+        label: "Object"            
+    }, 
+    {
+        value: 'form',
+        label: 'Form',
+        children: [
+            {
+                value: 'btn',
+                label: "Button"            
+            },
+            {
+                value: 'label',
+                label: "Label",
+            },
+            {
+                value: 'sw',
+                label: "Switch"            
+            },
+            {
+                value: 'cb',
+                label: "Checkbox"            
+            },
+            {
+                value: 'ddlist',
+                label: "Drop-Down List"            
+            },
+            {
+                value: 'roller',
+                label: "Roller"            
+            }, 
+            {
+                value: 'slider',
+                label: "Slider"            
+            },          
+        ],
+    },
+    {
+        value: 'data',
+        label: 'Data',
+        children: [
+            {
+                value: 'bar',
+                label: "Bar"            
+            },
+            {
+                value: 'gauge',
+                label: "Gauge"            
+            },
+            {
+                value: 'led',
+                label: "LED"            
+            }, 
+            {
+                value: 'chart',
+                label: "Chart"            
+            },
+            {
+                value: 'arc',
+                label: "Arc"            
+            },
+            {
+                value: 'calendar',
+                label: "Calendar"            
+            },                
+
+        ]     
+    },
+    {
+        value: 'layer',
+        label: 'Layer',
+        children: [
+            {
+                value: 'page',
+                label: "Page"            
+            },
+            {
+                value: 'cont',
+                label: "Container"            
+            },
+        ]     
+    }
+
+]
 
 
 
