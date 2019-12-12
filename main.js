@@ -83,6 +83,10 @@ const Widgets_opt = [
                 value: 'cont',
                 label: "Container"            
             },
+            {
+                value: 'win',
+                label: "Window"
+            }
         ]     
     }
 
@@ -154,6 +158,10 @@ window.onload = function() {
             currJSON: {},
             Widget: [],
 
+            //Simulator
+            canvasX: 0,
+            canvasY: 0,
+
             //Creator
             options: Widgets_opt,
             props: {emitPath: false, expandTrigger: 'hover'},
@@ -221,7 +229,8 @@ window.onload = function() {
                     id + " = lv." + type + "(" + par + ")",
                     id + ".set_drag(1)",
                     id + ".set_protect(lv.PROTECT.PRESS_LOST)",
-                    "print(getobjattr(" + id + ",\'" + id + "\'))",
+                    // "print(getobjattr(" + id + ",\'" + id + "\'))",
+                    "getobjattr(" + id + ",\'" + id + "\')",
                     id + ".set_event_cb(lambda obj=None, event=-1, name=\'" + id + '\'' + ", real_obj =" + id + " : EventCB(real_obj, name, event))"
                 ];
                 const complexWidgets = ['ddlist', 'page', 'roller'];
@@ -236,6 +245,11 @@ window.onload = function() {
             getID: function(type) {
                 var id = type + (this.widget_count++).toString(16);
                 return id;
+            },
+
+            updateXY : function(event) {
+                this.canvasX = event.offsetX;
+                this.canvasY = event.offsetY;
             }
         }
    

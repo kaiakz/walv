@@ -12,6 +12,9 @@
 				max-height: 600px;
 				vertical-align: middle;
 			} */
+			/* body {
+				font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+			} */
 			#canvas {
 				border: 2px grey solid;
 				border-radius: 6px;
@@ -51,10 +54,16 @@
 				</el-header>
 				
 				<el-container>
-					<el-aside width="230px">
+					<el-aside width="17%">
 						<div style="margin-top: 20px;text-align: center">
 							<el-cascader :options="options" :show-all-levels="false" :props="props" v-model="selected_type"></el-cascader>
-							<el-button round type="primary" @click="Creator">CREATE</el-button>
+							<el-button type="primary" icon="el-icon-plus" @click="Creator" circle></el-button>
+							<div style="margin: 15px;">
+								<em class="el-icon-aim"> TARGET:  </em>
+								<el-button type="success" icon="el-icon-check" circle></el-button>
+								<el-button type="danger" icon="el-icon-delete" circle></el-button>
+							</div>
+							
 						</div>
 						<!-- <el-tree
 						:data="data"
@@ -75,7 +84,12 @@
 						<el-tabs type="border-card">
 							<el-tab-pane label="TFT Simulator">				
 								<div id="mp_js_stdout" style="text-align: center">
-									<canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+									<canvas id="canvas" 
+										oncontextmenu="event.preventDefault()" 
+										onmousedown="this.style.cursor='move'" onmouseup="this.style.cursor='default'" 
+										@mousemove="updateXY"
+										tabindex="-1">
+									</canvas>
 								</div>
 							</el-tab-pane>
 							<el-tab-pane label="Code Editor">
@@ -88,10 +102,10 @@
 							</el-tab-pane>
 						</el-tabs>
 
-						<div style="margin: 30px;">
+						<div style="margin: 18px">
 							<i class="el-icon-toilet-paper">REPL Terminal</i>
-							<el-switch v-model="term_show">
-							</el-switch>
+							<el-switch v-model="term_show"></el-switch>
+							<i style="float: right;">X: {{canvasX}}, Y: {{canvasY}}</i>
 						</div>
 						<!-- <el-tabs type="card">
 							<el-tab-pane label="Termial">
@@ -102,31 +116,31 @@
 						</el-tabs> -->
 					<div id="mpy_repl" v-show="term_show" style="height:270px"></div>						
 					</el-main>
-					<el-aside>
-					<div style="margin-top : 20px">
-						<el-radio-group>
-						<el-radio-button label="left">Sample</el-radio-button>
-						<el-radio-button label="right">Sample</el-radio-button>
-						<el-radio-button label="top">Sample</el-radio-button>
-						</el-radio-group>
-						<div style="margin: 20px;"></div>
-						<!-- <el-form label-width="80px">
-						<el-form-item label="Name">
-							<el-input></el-input>
-						</el-form-item>
-						<el-form-item label="Name">
-							<el-input></el-input>
-						</el-form-item>
-						<el-form-item label="Name">
-							<el-input></el-input>
-						</el-form-item>	
-						</el-form> -->
-						<ul>
-							<li v-for="(value, key) in currJSON">
-							  	{{ key }} - {{ value }}
-							</li>
-						</ul>
-					</div>
+					<el-aside width="17%">
+						<div style="margin-top : 20px">
+							<el-radio-group>
+							<el-radio-button label="left">Sample</el-radio-button>
+							<el-radio-button label="right">Sample</el-radio-button>
+							<el-radio-button label="top">Sample</el-radio-button>
+							</el-radio-group>
+							<div style="margin: 20px;"></div>
+							<!-- <el-form label-width="80px">
+							<el-form-item label="Name">
+								<el-input></el-input>
+							</el-form-item>
+							<el-form-item label="Name">
+								<el-input></el-input>
+							</el-form-item>
+							<el-form-item label="Name">
+								<el-input></el-input>
+							</el-form-item>	
+							</el-form> -->
+							<ul>
+								<li v-for="(value, key) in currJSON">
+									{{ key }} - {{ value }}
+								</li>
+							</ul>
+						</div>
 					</el-aside>
 				</el-container>
 
