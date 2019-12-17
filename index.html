@@ -17,9 +17,10 @@
 			} */
 			#canvas {
 				border: 2px grey solid;
-				border-radius: 6px;
+				border-radius: 2px;
 				width: 600px;
 				height: 400px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
 			};
 		</style>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.13.0/lib/theme-chalk/index.css">
@@ -47,7 +48,6 @@
 						</el-submenu>
 						<el-menu-item index="3" disabled>More</el-menu-item>
 						<el-menu-item index="4">
-							<!-- <el-switch active-color="#13ce66" inactive-color="#ff4949" active-text="Python REPL"></el-switch> -->
 							<i class="el-icon-share"></i>
 						</el-menu-item>						
 					</el-menu>        
@@ -58,27 +58,19 @@
 						<div style="margin-top: 20px;text-align: center">
 							<el-cascader :options="options" :show-all-levels="false" :props="props" v-model="selected_type"></el-cascader>
 							<el-button type="primary" icon="el-icon-plus" @click="Creator" circle></el-button>
+							
 							<div style="margin: 15px;">
 								<em class="el-icon-aim"> TARGET:  </em>
-								<el-button type="success" icon="el-icon-check" circle></el-button>
+								<el-button type="success" icon="el-icon-view" @click="GetCurrWidget" circle></el-button>	
+								<el-button type="warning" icon="el-icon-refresh-left" circle></el-button>
 								<el-button type="danger" icon="el-icon-delete" circle></el-button>
 							</div>
-							
+							<el-divider></el-divider>
 						</div>
-						<!-- <el-tree
-						:data="data"
-						node-key="id"
-						default-expand-all
-						@node-drag-start="handleDragStart"
-						@node-drag-enter="handleDragEnter"
-						@node-drag-leave="handleDragLeave"
-						@node-drag-over="handleDragOver"
-						@node-drag-end="handleDragEnd"
-						@node-drop="handleDrop"
-						draggable
-						:allow-drop="allowDrop"
-						:allow-drag="allowDrag">
-						</el-tree> -->
+						<el-tree
+						ref="TreeView"
+						:data="widget_tree" highlight-current>
+						</el-tree>
 					</el-aside>
 					<el-main>
 						<el-tabs type="border-card">
@@ -94,7 +86,6 @@
 							</el-tab-pane>
 							<el-tab-pane label="Code Editor">
 								<div id="code-editor" style="height: 430px"></div>
-								<!-- <el-input type="textarea" :rows="18" placeholder="Your Code Here"></el-input> -->
 							</el-tab-pane>
 							<el-tab-pane label="Project">
 								<el-calendar>
@@ -107,13 +98,7 @@
 							<el-switch v-model="term_show"></el-switch>
 							<i style="float: right;">X: {{canvasX}}, Y: {{canvasY}}</i>
 						</div>
-						<!-- <el-tabs type="card">
-							<el-tab-pane label="Termial">
-							</el-tab-pane>
-							<el-tab-pane label="Log">Log Here</el-tab-pane>
-							<el-tab-pane label="Some">Some</el-tab-pane>
-							<el-tab-pane label="History">History</el-tab-pane>
-						</el-tabs> -->
+
 					<div id="mpy_repl" v-show="term_show" style="height:270px"></div>						
 					</el-main>
 					<el-aside width="17%">
@@ -124,17 +109,6 @@
 							<el-radio-button label="top">Sample</el-radio-button>
 							</el-radio-group>
 							<div style="margin: 20px;"></div>
-							<!-- <el-form label-width="80px">
-							<el-form-item label="Name">
-								<el-input></el-input>
-							</el-form-item>
-							<el-form-item label="Name">
-								<el-input></el-input>
-							</el-form-item>
-							<el-form-item label="Name">
-								<el-input></el-input>
-							</el-form-item>	
-							</el-form> -->
 							<ul>
 								<li v-for="(value, key) in currJSON">
 									{{ key }} - {{ value }}

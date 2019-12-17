@@ -93,7 +93,6 @@ const Widgets_opt = [
 ]
 
 
-
 //The Python code to Initialize the environment
 const lvEnv = [
     "import ujson",
@@ -125,6 +124,7 @@ const lvEnv = [
     "baseAttr = dir(lv.obj)"
 ];
 
+
 /* Define special function for python*/
 const defFun = [
     //Get and send JSON format text
@@ -148,6 +148,10 @@ const defFun = [
 ];
 
 
+
+
+
+
 window.onload = function() {   
     vm = new Vue({
         el: "#walv",
@@ -168,9 +172,19 @@ window.onload = function() {
             selected_type: "",
             widget_count: 0,
 
+            //TreeView
+            widget_tree: [
+                {
+                    label: 'scr',
+                    children: []
+                }
+            ],
+
             //Terminal
             term_show: true
         },
+
+
         watch: {
             str_json: function(val) {
                 try {
@@ -182,6 +196,8 @@ window.onload = function() {
                 }
             }
         },
+
+
         methods: {
             handle_stdout: function(text) {
                 if(text == '\x15')      //End: '\x15'
@@ -208,12 +224,21 @@ window.onload = function() {
 
             Creator: function() {
                 if (this.selected_type == "") {
-                    this.$message(                    {
-                        message: 'Please Select A Type',
+                    this.$message({
+                        message: 'Please Select A Type What You Want To Create',
                         type: 'warning'
                     });
                 } else {
-                    this.createWidget(this.selected_type, "scr");
+                    let curr_widget = this.GetCurrWidget();
+                    if (curr_widget === null) {
+                        this.$message({
+                            message: 'You Are Creating A Widget Invisible',
+                            type: 'warning'
+                        });
+                        this.createWidget(this.selected_type, null);                 
+                    } else {
+                        this.createWidget(this.selected_type, 'scr');
+                    }
                 }
             },
 
@@ -221,7 +246,7 @@ window.onload = function() {
             function(type, strPar) {
                 var id = this.getID(type);
                 var par = strPar;
-                if(strPar == 'none'){
+                if(strPar === null){
                     par = '';
                 }
                 console.log(id);
@@ -250,6 +275,14 @@ window.onload = function() {
             updateXY : function(event) {
                 this.canvasX = event.offsetX;
                 this.canvasY = event.offsetY;
+            },
+
+            GetCurrWidget: function() {
+                node = this.$refs.TreeView.getCurrentNode()
+                if (node != null) {
+                    return node.label;
+                }
+                return null;
             }
         }
    
@@ -267,6 +300,7 @@ window.onload = function() {
     maxLines: "350px" });
     document.title = "WALV"
 }
+
 
 function mpylv_init(vm) {
     
