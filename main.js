@@ -118,9 +118,9 @@ const lvEnv = [
     "indev_drv.read_cb = SDL.mouse_read;",
     "lv.indev_drv_register(indev_drv);",
     /* Create a screen with a button and a label */
-    "scr = lv.obj()",
+    "screen = lv.obj()",
     /* Load the screen */
-    "lv.scr_load(scr)",
+    "lv.scr_load(screen)",
     "baseAttr = dir(lv.obj)"
 ];
 
@@ -175,7 +175,7 @@ window.onload = function() {
             //TreeView
             widget_tree: [
                 {
-                    label: 'scr',
+                    label: 'screen',
                     children: []
                 }
             ],
@@ -237,7 +237,7 @@ window.onload = function() {
                         });
                         this.createWidget(this.selected_type, null);                 
                     } else {
-                        this.createWidget(this.selected_type, 'scr');
+                        this.createWidget(this.selected_type, curr_widget);
                     }
                 }
             },
@@ -263,6 +263,8 @@ window.onload = function() {
                     code.push(id + ".get_child(None).set_drag_parent(1)");
                 }
                 mp_js_do_str(code.join('\n'));
+
+                this.appendTreeView(id);
                 // pushToList(id);
                 // SRCSign.push("lv_obj_t * " + id + " = lv_" + type + "_create(" + id + ", NULL);");
             },
@@ -270,6 +272,11 @@ window.onload = function() {
             getID: function(type) {
                 var id = type + (this.widget_count++).toString(16);
                 return id;
+            },
+
+            appendTreeView(widget_name) {
+                const newChild = {label: widget_name, children: [] };
+                this.$refs.TreeView.getCurrentNode().children.push(newChild);
             },
 
             updateXY : function(event) {
