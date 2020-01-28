@@ -92,6 +92,8 @@ const Widgets_opt = [
 
 ]
 
+// const other_attribute = ['DRAG', 'CLICK', 'HIDDEN', 'TOP'];
+
 
 //The Python code to Initialize the environment
 const lvEnv = [
@@ -155,6 +157,7 @@ const defFun = [
 window.onload = function() {   
     vm = new Vue({
         el: "#walv",
+
         data: {
             buffer: [],
             str_json: "",
@@ -167,7 +170,7 @@ window.onload = function() {
             canvasY: 0,
 
             //Creator
-            options: Widgets_opt,
+            creator_options: Widgets_opt,
             props: {emitPath: false, expandTrigger: 'hover'},
             selected_type: "",
             widget_count: 0,
@@ -181,7 +184,11 @@ window.onload = function() {
             ],
 
             //Terminal
-            term_show: true
+            term_show: true,
+
+            // Watcher
+            // other_attr_option: other_attribute,
+            // other_attr: [],
         },
 
 

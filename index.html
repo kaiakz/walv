@@ -56,7 +56,7 @@
 				<el-container>
 					<el-aside width="17%">
 						<div style="margin-top: 20px;text-align: center">
-							<el-cascader :options="options" :show-all-levels="false" :props="props" v-model="selected_type"></el-cascader>
+							<el-cascader :options="creator_options" :show-all-levels="false" :props="props" v-model="selected_type"></el-cascader>
 							<el-button type="primary" icon="el-icon-plus" @click="Creator" circle></el-button>
 							
 							<div style="margin: 15px;">
@@ -101,14 +101,71 @@
 
 					<div id="mpy_repl" v-show="term_show" style="height:270px"></div>						
 					</el-main>
+
+
 					<el-aside width="17%">
 						<div style="margin-top : 20px">
 							<el-radio-group>
-							<el-radio-button label="left">Sample</el-radio-button>
-							<el-radio-button label="right">Sample</el-radio-button>
-							<el-radio-button label="top">Sample</el-radio-button>
+								<el-radio-button label="left">Attribute</el-radio-button>
+								<el-radio-button label="right">Style</el-radio-button>
+								<el-radio-button label="top">Animation</el-radio-button>
 							</el-radio-group>
 							<div style="margin: 20px;"></div>
+
+							<div id="setting_attribute">
+								<el-form ref="form" :model="currJSON" label-width="55px">
+																	
+										<el-form-item label="Postion">
+											<el-col :span="11">
+												<el-input placeholder="X" v-model="currJSON.get_x">
+													<template slot="prepend">X</template>
+												</el-input>
+											</el-col>
+											<el-col class="line" :span="2">.</el-col>
+											<el-col :span="11">
+												<el-input placeholder="Y" v-model="currJSON.get_y">
+													<template slot="prepend">Y</template>
+												</el-input>
+											</el-col>
+										</el-form-item>									  
+									
+										<el-form-item label="Size">
+											<el-col :span="11">
+												<el-input placeholder="Width" v-model="currJSON.get_width">
+													<template slot="prepend">W</template>
+												</el-input>
+											</el-col>
+											<el-col class="line" :span="2">-</el-col>
+											<el-col :span="11">
+												<el-input placeholder="Height" v-model="currJSON.get_height">
+													<template slot="prepend">H</template>
+												</el-input>
+											</el-col>
+										</el-form-item>
+
+										<el-form-item label="Other">
+											<!-- <el-checkbox-group v-model="other_attr">
+												<el-checkbox label="DRAG" name="type"></el-checkbox>
+												<el-checkbox label="CLICK" name="type"></el-checkbox>
+												<el-checkbox label="HIDEN" name="type"></el-checkbox>
+												<el-checkbox label="TOP" name="type"></el-checkbox>
+											</el-checkbox-group> -->
+											<el-col :span="12">
+												  DRAG<el-switch v-model="currJSON.get_drag"></el-switch>
+											</el-col>
+											<el-col :span="12">
+												CLICK<el-switch v-model="currJSON.get_click"></el-switch>
+											</el-col>
+											<el-col :span="12">
+												HIDDEN<el-switch v-model="currJSON.get_hidden"></el-switch>
+											</el-col>
+											<el-col :span="12">
+												TOP<el-switch v-model="currJSON.get_top"></el-switch>
+											</el-col>
+											  
+										</el-form-item>
+								</el-form>
+							</div>
 							<ul>
 								<li v-for="(value, key) in currJSON">
 									{{ key }} - {{ value }}
