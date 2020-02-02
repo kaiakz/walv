@@ -197,11 +197,12 @@ window.onload = function() {
                 try {
                     // currJSON = JSON.parse(this.str_json);
                     this.currJSON = Object.assign({}, JSON.parse(this.str_json))
-                    console.log(this.currJSON);                    
+                    // console.log(this.currJSON);                    
                 } catch (error) {
                     console.log(error);
                 }
-            }
+            },
+
         },
 
 
@@ -249,8 +250,8 @@ window.onload = function() {
                 }
             },
 
-            createWidget: //Parametres are the String type
-            function(type, strPar) {
+            //Parametres are the String type
+            createWidget: function(type, strPar) {
                 var id = this.getID(type);
                 var par = strPar;
                 if(strPar === null){
@@ -297,6 +298,18 @@ window.onload = function() {
                     return node.label;
                 }
                 return null;
+            },
+
+            bind_widget: function(attribute_name) {
+                let curr_widget = this.GetCurrWidget();
+                let get_fn_name = "get_" + attribute_name;
+                let set_fn_name = "set_" + attribute_name;
+                let value = this.currJSON[get_fn_name];
+                if(value == null) {
+                    value = 0;
+                }
+                let str = this.currJSON["id"] + '.' + set_fn_name + '(' + value + ')';
+                mp_js_do_str(str);
             }
         }
    

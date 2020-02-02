@@ -117,13 +117,13 @@
 																	
 										<el-form-item label="Postion">
 											<el-col :span="11">
-												<el-input placeholder="X" v-model="currJSON.get_x">
+												<el-input placeholder="X" v-model="currJSON.get_x" v-on:input="bind_widget('x')">
 													<template slot="prepend">X</template>
 												</el-input>
 											</el-col>
 											<el-col class="line" :span="2">.</el-col>
 											<el-col :span="11">
-												<el-input placeholder="Y" v-model="currJSON.get_y">
+												<el-input placeholder="Y" v-model="currJSON.get_y"  v-on:input="bind_widget('y')">
 													<template slot="prepend">Y</template>
 												</el-input>
 											</el-col>
@@ -131,13 +131,13 @@
 									
 										<el-form-item label="Size">
 											<el-col :span="11">
-												<el-input placeholder="Width" v-model="currJSON.get_width">
+												<el-input placeholder="Width" v-model="currJSON.get_width"  v-on:input="bind_widget('width')">
 													<template slot="prepend">W</template>
 												</el-input>
 											</el-col>
 											<el-col class="line" :span="2">-</el-col>
 											<el-col :span="11">
-												<el-input placeholder="Height" v-model="currJSON.get_height">
+												<el-input placeholder="Height" v-model="currJSON.get_height" v-on:input="bind_widget('height')">
 													<template slot="prepend">H</template>
 												</el-input>
 											</el-col>
@@ -151,16 +151,16 @@
 												<el-checkbox label="TOP" name="type"></el-checkbox>
 											</el-checkbox-group> -->
 											<el-col :span="12">
-												  DRAG<el-switch v-model="currJSON.get_drag"></el-switch>
+												  DRAG<el-switch v-model="currJSON.get_drag" v-on:input="bind_widget('drag')"></el-switch>
 											</el-col>
 											<el-col :span="12">
-												CLICK<el-switch v-model="currJSON.get_click"></el-switch>
+												CLICK<el-switch v-model="currJSON.get_click" v-on:input="bind_widget('click')"></el-switch>
 											</el-col>
 											<el-col :span="12">
-												HIDDEN<el-switch v-model="currJSON.get_hidden"></el-switch>
+												HIDDEN<el-switch v-model="currJSON.get_hidden" v-on:input="bind_widget('hidden')"></el-switch>
 											</el-col>
 											<el-col :span="12">
-												TOP<el-switch v-model="currJSON.get_top"></el-switch>
+												TOP<el-switch v-model="currJSON.get_top" v-on:input="bind_widget('top')"></el-switch>
 											</el-col>
 											  
 										</el-form-item>
