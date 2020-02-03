@@ -128,7 +128,7 @@ const lvEnv = [
 
 
 /* Define special function for python*/
-const defFun = [
+const DEF_FUN = [
     //Get and send JSON format text
     "def getobjattr(obj, id):",
     "    d={}",
@@ -142,11 +142,17 @@ const defFun = [
     "            except:",
     "                pass",
     "    print('\x06'+ujson.dumps(d)+'\x15')",
+    "def getxy(obj, id):",
+    "    d={}",
+    "    d['id']=id",
+    "    d['x']=obj.get_x()",
+    "    d['y']=obj.get_y()",
+    "    print('\x06'+ujson.dumps(d)+'\x15')",
     //Determine what event is: 
     //Test b: b.set_event_cb(lambda obj=None, event=-1,name='b',real_obj=b:EventCB(real_obj,name,event))
     "def EventCB(obj, id, event):",
     "    if event == lv.EVENT.DRAG_END:",
-    "        getobjattr(obj, id)"
+    "        getxy(obj, id)"
 ];
 
 
@@ -162,12 +168,13 @@ window.onload = function() {
             buffer: [],
             str_json: "",
             mask: false,
-            currJSON: {},
-            Widget: [],
+            currJSON: {},   // The Attributes
+            posJSON: {},
+            WidgetPool: {},
 
             //Simulator
-            canvasX: 0,
-            canvasY: 0,
+            cursorX: 0,
+            cursorY: 0,
 
             //Creator
             creator_options: Widgets_opt,
@@ -182,6 +189,7 @@ window.onload = function() {
                     children: []
                 }
             ],
+            tree_selected_name: "",
 
             //Terminal
             term_show: true,
@@ -196,12 +204,21 @@ window.onload = function() {
             str_json: function(val) {
                 try {
                     // currJSON = JSON.parse(this.str_json);
-                    this.currJSON = Object.assign({}, JSON.parse(this.str_json))
+                    let j = JSON.parse(this.str_json);
+                    if(j['x'] != undefined) {
+                        this.posJSON = j;
+                    } else {
+                        this.currJSON = Object.assign({}, j);
+                    }
                     // console.log(this.currJSON);                    
                 } catch (error) {
-                    console.log(error);
+                    alert(error);
                 }
             },
+
+            'posJSON.x': (newval) => {
+                console.log(newval);
+            }
 
         },
 
@@ -243,16 +260,16 @@ window.onload = function() {
                             message: 'You Are Creating A Widget Invisible',
                             type: 'warning'
                         });
-                        this.createWidget(this.selected_type, null);                 
+                        this.CreateWidget(this.selected_type, null);                 
                     } else {
-                        this.createWidget(this.selected_type, curr_widget);
+                        this.CreateWidget(this.selected_type, curr_widget);
                     }
                 }
             },
 
             //Parametres are the String type
-            createWidget: function(type, strPar) {
-                var id = this.getID(type);
+            CreateWidget: function(type, strPar) {
+                var id = this.makeID(type);
                 var par = strPar;
                 if(strPar === null){
                     par = '';
@@ -273,23 +290,36 @@ window.onload = function() {
                 mp_js_do_str(code.join('\n'));
 
                 this.appendTreeView(id);
+                this.WidgetPool_Add(id, par, type);
                 // pushToList(id);
                 // SRCSign.push("lv_obj_t * " + id + " = lv_" + type + "_create(" + id + ", NULL);");
             },
 
-            getID: function(type) {
+            makeID: function(type) {
                 var id = type + (this.widget_count++).toString(16);
                 return id;
             },
 
             appendTreeView(widget_name) {
-                const newChild = {label: widget_name, children: [] };
+                let attributes = {
+                    x: this.currJSON.get_x,
+                    y: this.currJSON.get_y,
+                    width: 0,
+                    height: 0,
+                };
+                let newChild = {label: widget_name, children: [] };
                 this.$refs.TreeView.getCurrentNode().children.push(newChild);
             },
 
-            updateXY : function(event) {
-                this.canvasX = event.offsetX;
-                this.canvasY = event.offsetY;
+            tree_cb: function() {
+                let id = this.GetCurrWidget();
+                this.tree_selected_name = id;
+                mp_js_do_str("getobjattr(" + id + ",\'" + id + "\')");
+            },
+
+            cursorXY : function(event) {
+                this.cursorX = event.offsetX;
+                this.cursorY = event.offsetY;
             },
 
             GetCurrWidget: function() {
@@ -300,6 +330,7 @@ window.onload = function() {
                 return null;
             },
 
+            // Bind currJSON with the widget
             bind_widget: function(attribute_name) {
                 let curr_widget = this.GetCurrWidget();
                 let get_fn_name = "get_" + attribute_name;
@@ -307,9 +338,25 @@ window.onload = function() {
                 let value = this.currJSON[get_fn_name];
                 if(value == null) {
                     value = 0;
+                } else if(value == true) {
+                    value = "True"
+                } else if(value == false) {
+                    value = "False"
                 }
                 let str = this.currJSON["id"] + '.' + set_fn_name + '(' + value + ')';
                 mp_js_do_str(str);
+            },
+
+            WidgetPool_Add: function(name, par_name, type) {
+                let w = {
+                    type: type,
+                    parent: par_name,
+                    attributes: {
+                        x: 0,
+                        y: 0,
+                    }
+                };
+                this.WidgetPool[name] = w;
             }
         }
    
@@ -318,21 +365,14 @@ window.onload = function() {
     mpylv_init(vm);
 
     /* Initialize the ace editor */
-    editor = ace.edit("code-editor");
-    editor.getSession().setUseWrapMode(true);
-    editor.setAutoScrollEditorIntoView(true);
-    var PythonMode = ace.require("ace/mode/python").Mode;
-    editor.session.setMode(new PythonMode());
-    editor.setOptions({
-    maxLines: "350px" });
+    editor_init();
+
     document.title = "WALV"
 }
 
 
 function mpylv_init(vm) {
     
-
-
     Module.canvas = document.getElementById("canvas");
 
     /* Bind mp_js_stdout */
@@ -349,7 +389,7 @@ function mpylv_init(vm) {
     });
     term.open(document.getElementById("mpy_repl"), true);
     term.fit();
-    term.write('Hello from \x1B[1;3;31mWALV\x1B[0m');
+    term.write('Welcome To \x1B[1;3;31mWALV\x1B[0m');
 
     /*Initialize MicroPython itself*/
     mp_js_init(8 * 1024 * 1024); 
@@ -372,7 +412,7 @@ function mpylv_init(vm) {
         mp_js_do_str(lvEnv[i]);
     }
     /* Add function getobjattr() & EventCB() */
-    mp_js_do_str(defFun.join('\n'));
+    mp_js_do_str(DEF_FUN.join('\n'));
 
     /*Setup lv_task_handler loop*/
     var the_mp_handle_pending = Module.cwrap('mp_handle_pending', null);
@@ -386,4 +426,13 @@ function mpylv_init(vm) {
 
     /*Start the main loop, asynchronously.*/
     handle_pending();
+}
+
+function editor_init() {
+    editor = ace.edit("code-editor");
+    editor.getSession().setUseWrapMode(true);
+    editor.setAutoScrollEditorIntoView(true);
+    let PythonMode = ace.require("ace/mode/python").Mode;
+    editor.session.setMode(new PythonMode());
+    editor.setOptions({maxLines: "350px" });    
 }

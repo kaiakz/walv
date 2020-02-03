@@ -57,21 +57,29 @@
 					<el-aside width="17%">
 						<div style="margin-top: 20px;text-align: center">
 							<el-cascader :options="creator_options" :show-all-levels="false" :props="props" v-model="selected_type"></el-cascader>
-							<el-button type="primary" icon="el-icon-plus" @click="Creator" circle></el-button>
-							
+							<el-badge :value="widget_count" class="item">
+								<el-button type="primary" icon="el-icon-plus" @click="Creator" circle></el-button>
+							</el-badge>
 							<div style="margin: 15px;">
-								<em class="el-icon-aim"> TARGET:  </em>
-								<el-button type="success" icon="el-icon-view" @click="GetCurrWidget" circle></el-button>	
-								<el-button type="warning" icon="el-icon-refresh-left" circle></el-button>
-								<el-button type="danger" icon="el-icon-delete" circle></el-button>
+								<el-row>
+									<el-tag>{{ tree_selected_name }}</el-tag>
+									<el-button type="success" icon="el-icon-view"circle></el-button>	
+									<el-button type="warning" icon="el-icon-refresh-left" circle></el-button>
+									<el-button type="danger" icon="el-icon-delete" circle></el-button>									
+								</el-row>
+								<el-row style="margin-top: 20px">
+									<!-- <em class="el-icon-d-arrow-right">{{ tree_selected_name }}<i class="el-icon-d-arrow-left"></i></em> -->
+								</el-row>
 							</div>
 							<el-divider></el-divider>
 						</div>
 						<el-tree
-						ref="TreeView"
-						:data="widget_tree" highlight-current>
+							ref="TreeView"
+							:data="widget_tree" highlight-current  default-expand-all @node-click="tree_cb" >
 						</el-tree>
 					</el-aside>
+
+
 					<el-main>
 						<el-tabs type="border-card">
 							<el-tab-pane label="TFT Simulator">				
@@ -79,7 +87,7 @@
 									<canvas id="canvas" 
 										oncontextmenu="event.preventDefault()" 
 										onmousedown="this.style.cursor='move'" onmouseup="this.style.cursor='default'" 
-										@mousemove="updateXY"
+										@mousemove="cursorXY"
 										tabindex="-1">
 									</canvas>
 								</div>
@@ -96,10 +104,10 @@
 						<div style="margin: 18px">
 							<i class="el-icon-toilet-paper">REPL Terminal</i>
 							<el-switch v-model="term_show"></el-switch>
-							<i style="float: right;">X: {{canvasX}}, Y: {{canvasY}}</i>
+							<i style="float: right;">X: {{cursorX}}, Y: {{cursorY}}</i>
 						</div>
 
-					<div id="mpy_repl" v-show="term_show" style="height:270px"></div>						
+						<div id="mpy_repl" v-show="term_show" style="height:270px"></div>						
 					</el-main>
 
 
@@ -114,7 +122,13 @@
 
 							<div id="setting_attribute">
 								<el-form ref="form" :model="currJSON" label-width="55px">
-																	
+										<el-form-item label="ID">
+											<el-col :span="10"><em> {{ currJSON.id }} </em></el-col>
+											<el-col :span="7">
+												<i class="el-icon-lock">  </i><el-switch v-model="currJSON.get_drag" v-on:input="bind_widget('drag')"></el-switch>
+											</el-col>
+											<el-col :span="7"><el-button type="warning" icon="el-icon-refresh-right" circle></el-button></el-col>
+										</el-form-item>																	
 										<el-form-item label="Postion">
 											<el-col :span="11">
 												<el-input placeholder="X" v-model="currJSON.get_x" v-on:input="bind_widget('x')">
@@ -144,12 +158,6 @@
 										</el-form-item>
 
 										<el-form-item label="Other">
-											<!-- <el-checkbox-group v-model="other_attr">
-												<el-checkbox label="DRAG" name="type"></el-checkbox>
-												<el-checkbox label="CLICK" name="type"></el-checkbox>
-												<el-checkbox label="HIDEN" name="type"></el-checkbox>
-												<el-checkbox label="TOP" name="type"></el-checkbox>
-											</el-checkbox-group> -->
 											<el-col :span="12">
 												  DRAG<el-switch v-model="currJSON.get_drag" v-on:input="bind_widget('drag')"></el-switch>
 											</el-col>
@@ -162,15 +170,16 @@
 											<el-col :span="12">
 												TOP<el-switch v-model="currJSON.get_top" v-on:input="bind_widget('top')"></el-switch>
 											</el-col>
-											  
 										</el-form-item>
+
+										<el-divider></el-divider>
 								</el-form>
 							</div>
-							<ul>
+							<!-- <ul>
 								<li v-for="(value, key) in currJSON">
 									{{ key }} - {{ value }}
 								</li>
-							</ul>
+							</ul> -->
 						</div>
 					</el-aside>
 				</el-container>
