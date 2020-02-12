@@ -201,24 +201,26 @@ window.onload = function() {
 
 
         watch: {
+            //Parse string to JSON
             str_json: function(val) {
                 try {
                     // currJSON = JSON.parse(this.str_json);
-                    let j = JSON.parse(this.str_json);
-                    if(j['x'] != undefined) {
-                        this.posJSON = j;
+                    let tmp = JSON.parse(this.str_json);
+                    if(tmp['x'] != undefined) {
+                        this.posJSON = tmp;
+                        this.WidgetPool[tmp['id']]['get_x'] = this.posJSON['x'];
+                        this.WidgetPool[tmp['id']]['get_y'] = this.posJSON['y'];
+                        this.currJSON = this.WidgetPool[tmp['id']];
                     } else {
-                        this.currJSON = Object.assign({}, j);
+                        // this.currJSON = Object.assign({}, j);
+                        this.WidgetPool[tmp['id']] = tmp;
+                        this.currJSON = this.WidgetPool[tmp['id']];
                     }
                     // console.log(this.currJSON);                    
                 } catch (error) {
                     alert(error);
                 }
             },
-
-            'posJSON.x': (newval) => {
-                console.log(newval);
-            }
 
         },
 
@@ -314,7 +316,10 @@ window.onload = function() {
             tree_cb: function() {
                 let id = this.GetCurrWidget();
                 this.tree_selected_name = id;
-                mp_js_do_str("getobjattr(" + id + ",\'" + id + "\')");
+                if (this.WidgetPool[id] == undefined) {
+                    mp_js_do_str("getobjattr(" + id + ",\'" + id + "\')");
+                }
+                this.currJSON = this.WidgetPool[id];
             },
 
             cursorXY : function(event) {
