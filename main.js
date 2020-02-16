@@ -1,164 +1,6 @@
 
 var vm = null;
 
-const Widgets_opt = [
-    {
-        value: 'obj',
-        label: "Object"            
-    }, 
-    {
-        value: 'form',
-        label: 'Form',
-        children: [
-            {
-                value: 'btn',
-                label: "Button"            
-            },
-            {
-                value: 'label',
-                label: "Label",
-            },
-            {
-                value: 'sw',
-                label: "Switch"            
-            },
-            {
-                value: 'cb',
-                label: "Checkbox"            
-            },
-            {
-                value: 'ddlist',
-                label: "Drop-Down List"            
-            },
-            {
-                value: 'roller',
-                label: "Roller"            
-            }, 
-            {
-                value: 'slider',
-                label: "Slider"            
-            },          
-        ],
-    },
-    {
-        value: 'data',
-        label: 'Data',
-        children: [
-            {
-                value: 'bar',
-                label: "Bar"            
-            },
-            {
-                value: 'gauge',
-                label: "Gauge"            
-            },
-            {
-                value: 'led',
-                label: "LED"            
-            }, 
-            {
-                value: 'chart',
-                label: "Chart"            
-            },
-            {
-                value: 'arc',
-                label: "Arc"            
-            },
-            {
-                value: 'calendar',
-                label: "Calendar"            
-            },                
-
-        ]     
-    },
-    {
-        value: 'layer',
-        label: 'Layer',
-        children: [
-            {
-                value: 'page',
-                label: "Page"            
-            },
-            {
-                value: 'cont',
-                label: "Container"            
-            },
-            {
-                value: 'win',
-                label: "Window"
-            }
-        ]     
-    }
-
-]
-
-// const other_attribute = ['DRAG', 'CLICK', 'HIDDEN', 'TOP'];
-
-
-//The Python code to Initialize the environment
-const lvEnv = [
-    "import ujson",
-    "import lvgl as lv",
-    "lv.init()",
-    "import SDL",
-    "SDL.init()",
-    /* Register SDL display driver. */
-    "disp_buf1 = lv.disp_buf_t()",
-    "buf1_1 = bytes(960*10)",
-    "lv.disp_buf_init(disp_buf1,buf1_1, None, len(buf1_1)//4)",
-    "disp_drv = lv.disp_drv_t()",
-    "lv.disp_drv_init(disp_drv)",
-    "disp_drv.buffer = disp_buf1",
-    "disp_drv.flush_cb = SDL.monitor_flush",
-    "disp_drv.hor_res = 480",
-    "disp_drv.ver_res = 320",
-    "lv.disp_drv_register(disp_drv)",
-    /*Regsiter SDL mouse driver*/
-    "indev_drv = lv.indev_drv_t()",
-    "lv.indev_drv_init(indev_drv)",
-    "indev_drv.type = lv.INDEV_TYPE.POINTER;",
-    "indev_drv.read_cb = SDL.mouse_read;",
-    "lv.indev_drv_register(indev_drv);",
-    /* Create a screen with a button and a label */
-    "screen = lv.obj()",
-    /* Load the screen */
-    "lv.scr_load(screen)",
-    "baseAttr = dir(lv.obj)"
-];
-
-
-/* Define special function for python*/
-const DEF_FUN = [
-    //Get and send JSON format text
-    "def getobjattr(obj, id):",
-    "    d={}",
-    "    d['id']=id",
-    "    for i in dir(obj):",
-    "        if 'get_' in i:",
-    "            try:",
-    "                ret = eval(id + '.' + i + '()')",
-    "                if isinstance(ret, (int,float,str,bool)):",
-    "                    d[i] = ret",
-    "            except:",
-    "                pass",
-    "    print('\x06'+ujson.dumps(d)+'\x15')",
-    "def getxy(obj, id):",
-    "    d={}",
-    "    d['id']=id",
-    "    d['x']=obj.get_x()",
-    "    d['y']=obj.get_y()",
-    "    print('\x06'+ujson.dumps(d)+'\x15')",
-    //Determine what event is: 
-    //Test b: b.set_event_cb(lambda obj=None, event=-1,name='b',real_obj=b:EventCB(real_obj,name,event))
-    "def EventCB(obj, id, event):",
-    "    if event == lv.EVENT.DRAG_END:",
-    "        getxy(obj, id)"
-];
-
-
-
-
-
 
 window.onload = function() {   
     vm = new Vue({
@@ -171,6 +13,7 @@ window.onload = function() {
             currJSON: {},   // The Attributes
             posJSON: {},
             WidgetPool: {},
+            InfoPool: {},
 
             //Simulator
             cursorX: 0,
@@ -204,12 +47,19 @@ window.onload = function() {
             //Parse string to JSON
             str_json: function(val) {
                 try {
+
                     // currJSON = JSON.parse(this.str_json);
                     let tmp = JSON.parse(this.str_json);
                     if(tmp['x'] != undefined) {
                         this.posJSON = tmp;
+
+                        //Update Postion
                         this.WidgetPool[tmp['id']]['get_x'] = this.posJSON['x'];
                         this.WidgetPool[tmp['id']]['get_y'] = this.posJSON['y'];
+
+                        this.InfoPool_modify(tmp['id'], 'x');
+                        this.InfoPool_modify(tmp['id'], 'y');
+
                         this.currJSON = this.WidgetPool[tmp['id']];
                     } else {
                         // this.currJSON = Object.assign({}, j);
@@ -276,7 +126,7 @@ window.onload = function() {
                 if(strPar === null){
                     par = '';
                 }
-                console.log(id);
+                // console.log(id);
                 var code = [
                     id + " = lv." + type + "(" + par + ")",
                     id + ".set_drag(1)",
@@ -292,9 +142,11 @@ window.onload = function() {
                 mp_js_do_str(code.join('\n'));
 
                 this.appendTreeView(id);
-                this.WidgetPool_Add(id, par, type);
-                // pushToList(id);
-                // SRCSign.push("lv_obj_t * " + id + " = lv_" + type + "_create(" + id + ", NULL);");
+
+                //** walv saves the inital info to WidgetPool && InfoPool
+
+                //Store Info that a widget was created from.
+                this.InfoPool_add(id, par, type);
             },
 
             makeID: function(type) {
@@ -335,34 +187,79 @@ window.onload = function() {
                 return null;
             },
 
-            // Bind currJSON with the widget
-            bind_widget: function(attribute_name) {
-                let curr_widget = this.GetCurrWidget();
+            // Lock the widget, so it can't move anymore
+            // lock_widget: function() {
+            //     let drag_state = this.currJSON["get_drag"];
+            //     if(drag_state == true) {
+            //         drag_state = "True";
+            //     } else {
+            //         drag_state = "False";
+            //     }
+
+            //     mp_js_do_str(this.currJSON["id"] + ".set_drag(" + drag_state + ')');
+            // },
+
+
+            // Apply change to the widget: number
+            bind_widget_num: function(attribute_name) {
+
                 let get_fn_name = "get_" + attribute_name;
                 let set_fn_name = "set_" + attribute_name;
                 let value = this.currJSON[get_fn_name];
                 if(value == null) {
                     value = 0;
-                } else if(value == true) {
-                    value = "True"
-                } else if(value == false) {
-                    value = "False"
                 }
+
                 let str = this.currJSON["id"] + '.' + set_fn_name + '(' + value + ')';
                 mp_js_do_str(str);
+
+                this.InfoPool_modify(this.currJSON["id"], attribute_name);
             },
 
-            WidgetPool_Add: function(name, par_name, type) {
-                let w = {
+            // Apply change to the widget: boolean
+            bind_widget_bool: function(attribute_name) {
+                
+                let get_fn_name = "get_" + attribute_name;
+                let set_fn_name = "set_" + attribute_name;
+                let value = this.currJSON[get_fn_name];
+                if(value == true) {
+                    value = "True"
+                } else {
+                    value = "False"
+                }
+
+                let str = this.currJSON["id"] + '.' + set_fn_name + '(' + value + ')';
+                mp_js_do_str(str);
+
+                this.InfoPool_reverse(this.currJSON["id"], attribute_name);
+            },
+
+            InfoPool_add: function(id, par_name, type) {
+                let info = {
                     type: type,
                     parent: par_name,
-                    attributes: {
-                        x: 0,
-                        y: 0,
-                    }
+                    attributes: [],
                 };
-                this.WidgetPool[name] = w;
-            }
+                this.InfoPool[id] = info;
+            },
+
+            // For text or number
+            InfoPool_modify: function(id, attribute_name) {
+                let index = this.InfoPool[id].attributes.indexOf(attribute_name);
+                if (index == -1) {
+                    this.InfoPool[id].attributes.push(attribute_name);
+                }
+            },
+
+            //For boolean only
+            InfoPool_reverse: function(id, attribute_name) {
+                let index = this.InfoPool[id].attributes.indexOf(attribute_name);
+                if (index != -1) {
+                    this.InfoPool[id].attributes.splice(index, 1);
+                } else {
+                    this.InfoPool[id].attributes.push(attribute_name);
+                }
+            },
         }
    
     });
