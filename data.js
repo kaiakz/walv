@@ -153,3 +153,37 @@ const DEF_FUN = [
 ];
 
 
+const Getter = {
+    "obj": {
+        "x": "get_x",
+        "y": "get_y",
+        "width": "get_width",
+        "height": "get_height",
+        "drag": "get_drag",
+        "click": "get_click",
+        "hidden": "get_hidden",
+        "top": "get_top",
+    },
+
+    "text": {
+        "text": "get_text",
+    }
+
+}
+
+const Setter = {
+    "obj": {
+        "x": "set_x",
+        "y": "set_y",
+        "width": "set_width",
+        "height": "set_height",
+        "drag": "set_drag",
+        "click": "set_click",
+        "hidden": "set_hidden",
+        "top": "set_top",
+    },
+
+    "text": {
+        "text": "set_text",
+    }
+}
