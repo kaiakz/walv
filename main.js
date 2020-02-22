@@ -2,279 +2,22 @@
 var vm = null;
 
 
-window.onload = function() {   
-    vm = new Vue({
-        el: "#walv",
+window.onload = function() {
+    vm = new Vue(walv_main);
 
-        data: {
-            buffer: [],
-            str_json: "",
-            mask: false,
-            currJSON: {},   // The Attributes
-            posJSON: {},
-            WidgetPool: {},
-            InfoPool: {},
-
-            //Simulator
-            cursorX: 0,
-            cursorY: 0,
-
-            //Creator
-            creator_options: Widgets_opt,
-            props: {emitPath: false, expandTrigger: 'hover'},
-            selected_type: "",
-            widget_count: 0,
-
-            //TreeView
-            widget_tree: [
-                {
-                    label: 'screen',
-                    children: []
-                }
-            ],
-            tree_selected_name: "",
-
-            //Terminal
-            term_show: true,
-
-            // Watcher
-            // other_attr_option: other_attribute,
-            // other_attr: [],
-        },
-
-
-        watch: {
-            //Parse string to JSON
-            str_json: function(val) {
-                try {
-
-                    // currJSON = JSON.parse(this.str_json);
-                    let tmp = JSON.parse(this.str_json);
-                    if(tmp['x'] != undefined) {
-                        this.posJSON = tmp;
-
-                        //Update Postion
-                        this.WidgetPool[tmp['id']]['get_x'] = this.posJSON['x'];
-                        this.WidgetPool[tmp['id']]['get_y'] = this.posJSON['y'];
-
-                        this.InfoPool_modify(tmp['id'], 'x');
-                        this.InfoPool_modify(tmp['id'], 'y');
-
-                        this.currJSON = this.WidgetPool[tmp['id']];
-                    } else {
-                        // this.currJSON = Object.assign({}, j);
-                        this.WidgetPool[tmp['id']] = tmp;
-                        this.currJSON = this.WidgetPool[tmp['id']];
-                    }
-                    // console.log(this.currJSON);                    
-                } catch (error) {
-                    alert(error);
-                }
-            },
-
-        },
-
-
-        methods: {
-            handle_stdout: function(text) {
-                if(text == '\x15')      //End: '\x15'
-                {
-                    this.mask = false;
-                    this.str_json = this.buffer.join('');
-                }                
-                if(this.mask)
-                {
-                    this.buffer.push(text);
-                    text = "";
-                }        
-                if(text == '\x06')      //Begin: '\x06'
-                {     
-                    this.mask = true;
-                }
-
-                if(text == '\n')
-                {
-                    this.buffer.splice(0, this.buffer.length);
-                }
-                return text;          
-            },
-
-            Creator: function() {
-                if (this.selected_type == "") {
-                    this.$message({
-                        message: 'Please Select A Type What You Want To Create',
-                        type: 'warning'
-                    });
-                } else {
-                    let curr_widget = this.GetCurrWidget();
-                    if (curr_widget === null) {
-                        this.$message({
-                            message: 'You Are Creating A Widget Invisible',
-                            type: 'warning'
-                        });
-                        this.CreateWidget(this.selected_type, null);                 
-                    } else {
-                        this.CreateWidget(this.selected_type, curr_widget);
-                    }
-                }
-            },
-
-            //Parametres are the String type
-            CreateWidget: function(type, strPar) {
-                var id = this.makeID(type);
-                var par = strPar;
-                if(strPar === null){
-                    par = '';
-                }
-                // console.log(id);
-                var code = [
-                    id + " = lv." + type + "(" + par + ")",
-                    id + ".set_drag(1)",
-                    id + ".set_protect(lv.PROTECT.PRESS_LOST)",
-                    // "print(getobjattr(" + id + ",\'" + id + "\'))",
-                    "getobjattr(" + id + ",\'" + id + "\')",
-                    id + ".set_event_cb(lambda obj=None, event=-1, name=\'" + id + '\'' + ", real_obj =" + id + " : EventCB(real_obj, name, event))"
-                ];
-                const complexWidgets = ['ddlist', 'page', 'roller'];
-                if (complexWidgets.indexOf(type) != -1) {
-                    code.push(id + ".get_child(None).set_drag_parent(1)");
-                }
-                mp_js_do_str(code.join('\n'));
-
-                this.appendTreeView(id);
-
-                //** walv saves the inital info to WidgetPool && InfoPool
-
-                //Store Info that a widget was created from.
-                this.InfoPool_add(id, par, type);
-            },
-
-            makeID: function(type) {
-                var id = type + (this.widget_count++).toString(16);
-                return id;
-            },
-
-            appendTreeView(widget_name) {
-                let attributes = {
-                    x: this.currJSON.get_x,
-                    y: this.currJSON.get_y,
-                    width: 0,
-                    height: 0,
-                };
-                let newChild = {label: widget_name, children: [] };
-                this.$refs.TreeView.getCurrentNode().children.push(newChild);
-            },
-
-            tree_cb: function() {
-                let id = this.GetCurrWidget();
-                this.tree_selected_name = id;
-                if (this.WidgetPool[id] == undefined) {
-                    mp_js_do_str("getobjattr(" + id + ",\'" + id + "\')");
-                }
-                this.currJSON = this.WidgetPool[id];
-            },
-
-            cursorXY : function(event) {
-                this.cursorX = event.offsetX;
-                this.cursorY = event.offsetY;
-            },
-
-            GetCurrWidget: function() {
-                node = this.$refs.TreeView.getCurrentNode()
-                if (node != null) {
-                    return node.label;
-                }
-                return null;
-            },
-
-            // Lock the widget, so it can't move anymore
-            // lock_widget: function() {
-            //     let drag_state = this.currJSON["get_drag"];
-            //     if(drag_state == true) {
-            //         drag_state = "True";
-            //     } else {
-            //         drag_state = "False";
-            //     }
-
-            //     mp_js_do_str(this.currJSON["id"] + ".set_drag(" + drag_state + ')');
-            // },
-
-
-            // Apply change to the widget: number
-            bind_widget_num: function(attribute_name) {
-
-                let get_fn_name = "get_" + attribute_name;
-                let set_fn_name = "set_" + attribute_name;
-                let value = this.currJSON[get_fn_name];
-                if(value == null) {
-                    value = 0;
-                }
-
-                let str = this.currJSON["id"] + '.' + set_fn_name + '(' + value + ')';
-                mp_js_do_str(str);
-
-                this.InfoPool_modify(this.currJSON["id"], attribute_name);
-            },
-
-            // Apply change to the widget: boolean
-            bind_widget_bool: function(attribute_name) {
-                
-                let get_fn_name = "get_" + attribute_name;
-                let set_fn_name = "set_" + attribute_name;
-                let value = this.currJSON[get_fn_name];
-                if(value == true) {
-                    value = "True"
-                } else {
-                    value = "False"
-                }
-
-                let str = this.currJSON["id"] + '.' + set_fn_name + '(' + value + ')';
-                mp_js_do_str(str);
-
-                this.InfoPool_reverse(this.currJSON["id"], attribute_name);
-            },
-
-            InfoPool_add: function(id, par_name, type) {
-                let info = {
-                    type: type,
-                    parent: par_name,
-                    attributes: [],
-                };
-                this.InfoPool[id] = info;
-            },
-
-            // For text or number
-            InfoPool_modify: function(id, attribute_name) {
-                let index = this.InfoPool[id].attributes.indexOf(attribute_name);
-                if (index == -1) {
-                    this.InfoPool[id].attributes.push(attribute_name);
-                }
-            },
-
-            //For boolean only
-            InfoPool_reverse: function(id, attribute_name) {
-                let index = this.InfoPool[id].attributes.indexOf(attribute_name);
-                if (index != -1) {
-                    this.InfoPool[id].attributes.splice(index, 1);
-                } else {
-                    this.InfoPool[id].attributes.push(attribute_name);
-                }
-            },
-        }
-   
-    });
-
+    /* Initialize the wasm mpy */
     mpylv_init(vm);
 
     /* Initialize the ace editor */
-    editor_init();
+    editor_init(vm);
 
-    document.title = "WALV"
+    document.title = "WALV: the Online Designer For LittlevGL";
 }
 
 
-function mpylv_init(vm) {
-    
+
+var mpylv_init = (vm) => {
+
     Module.canvas = document.getElementById("canvas");
 
     /* Bind mp_js_stdout */
@@ -294,7 +37,7 @@ function mpylv_init(vm) {
     term.write('Welcome To \x1B[1;3;31mWALV\x1B[0m');
 
     /*Initialize MicroPython itself*/
-    mp_js_init(8 * 1024 * 1024); 
+    mp_js_init(8 * 1024 * 1024);
 
     /*Setup printing event handler*/
     mp_js_stdout.addEventListener('print', function(e) {
@@ -320,9 +63,9 @@ function mpylv_init(vm) {
     var the_mp_handle_pending = Module.cwrap('mp_handle_pending', null);
     function handle_pending() {
         the_mp_handle_pending();
-        setTimeout(handle_pending, 10); // should call lv_task_handler() 
+        setTimeout(handle_pending, 10); // should call lv_task_handler()
     }
-    
+
     /*Initialize the REPL.*/
     mp_js_init_repl();
 
@@ -330,11 +73,286 @@ function mpylv_init(vm) {
     handle_pending();
 }
 
-function editor_init() {
-    editor = ace.edit("code-editor");
+
+var editor_init = (vm) => {
+    let editor = ace.edit("code-editor");
     editor.getSession().setUseWrapMode(true);
     editor.setAutoScrollEditorIntoView(true);
-    let PythonMode = ace.require("ace/mode/python").Mode;
-    editor.session.setMode(new PythonMode());
-    editor.setOptions({maxLines: "350px" });    
+    editor.setFontSize(15);
+    editor.resize();
+    let c_edit_mode = ace.require("ace/mode/c_cpp").Mode;
+    let py_edit_mode = ace.require("ace/mode/python").Mode;
+    editor.session.setMode(new py_edit_mode());
+    editor.setOptions({maxLines: "200px" });
+    vm.editor = editor;
+    vm.py_edit_mode = py_edit_mode;
+    vm.c_edit_mode = c_edit_mode;
+}
+
+
+var walv_main = {
+    el: "#walv",
+
+    data: {
+        editor: null,
+        c_edit_mode: null,
+        py_edit_mode: null,
+        mode: true, //true: c, false: python
+
+        buffer: [],
+        str_json: "",
+        mask: false,
+        currJSON: {},   // The Attributes
+        posJSON: {},
+        WidgetPool: {},
+        InfoPool: {},
+
+        //Simulator
+        cursorX: 0,
+        cursorY: 0,
+
+        //Creator
+        creator_options: Widgets_opt,
+        props: {emitPath: false, expandTrigger: 'hover'},
+        selected_type: "",
+        widget_count: 0,
+
+        //TreeView
+        widget_tree: [
+            {
+                label: 'screen',
+                children: []
+            }
+        ],
+        selected_node_id: "",
+
+        //Terminal
+        term_show: true,
+
+        // Watcher
+        // other_attr_option: other_attribute,
+        // other_attr: [],
+    },
+
+
+    watch: {
+        //Parse string to JSON
+        str_json: function(val) {
+            try {
+
+                // currJSON = JSON.parse(this.str_json);
+                let tmp = JSON.parse(this.str_json);
+                if(tmp['x'] != undefined) {
+                    this.posJSON = tmp;
+
+                    //Update Postion
+                    this.WidgetPool[tmp['id']]['get_x'] = this.posJSON['x'];
+                    this.WidgetPool[tmp['id']]['get_y'] = this.posJSON['y'];
+
+                    this.InfoPool_modify(tmp['id'], 'x');
+                    this.InfoPool_modify(tmp['id'], 'y');
+
+                    this.currJSON = this.WidgetPool[tmp['id']];
+                } else {
+                    // this.currJSON = Object.assign({}, j);
+                    this.WidgetPool[tmp['id']] = tmp;
+                    this.currJSON = this.WidgetPool[tmp['id']];
+                }
+                // console.log(this.currJSON);                    
+            } catch (error) {
+                alert(error);
+            }
+        },
+
+    },
+
+
+    methods: {
+        handle_stdout: function(text) {
+            if(text == '\x15')      //End: '\x15'
+            {
+                this.mask = false;
+                this.str_json = this.buffer.join('');
+            }                
+            if(this.mask)
+            {
+                this.buffer.push(text);
+                text = "";
+            }        
+            if(text == '\x06')      //Begin: '\x06'
+            {
+                this.mask = true;
+            }
+
+            if(text == '\n')
+            {
+                this.buffer.splice(0, this.buffer.length);
+            }
+            return text;
+        },
+
+        Creator: function() {
+            if (this.selected_type == "") {
+                this.$message({
+                    message: 'Please Select A Type What You Want To Create',
+                    type: 'warning'
+                });
+            } else {
+                let curr_widget = this.GetCurrWidget();
+                if (curr_widget === null) {
+                    this.$message({
+                        message: 'You Are Creating A Widget Invisible',
+                        type: 'warning'
+                    });
+                    this.CreateWidget(this.selected_type, null);
+                } else {
+                    this.CreateWidget(this.selected_type, curr_widget);
+                }
+            }
+        },
+
+        //Parametres are the String type
+        CreateWidget: function(type, strPar) {
+            var id = this.makeID(type);
+            var par = strPar;
+            if(strPar === null){
+                par = '';
+            }
+            // console.log(id);
+            var code = [
+                id + " = lv." + type + "(" + par + ")",
+                id + ".set_drag(1)",
+                id + ".set_protect(lv.PROTECT.PRESS_LOST)",
+                // "print(getobjattr(" + id + ",\'" + id + "\'))",
+                "getobjattr(" + id + ",\'" + id + "\')",
+                id + ".set_event_cb(lambda obj=None, event=-1, name=\'" + id + '\'' + ", real_obj =" + id + " : EventCB(real_obj, name, event))"
+            ];
+            const complexWidgets = ['ddlist', 'page', 'roller'];
+            if (complexWidgets.indexOf(type) != -1) {
+                code.push(id + ".get_child(None).set_drag_parent(1)");
+            }
+            mp_js_do_str(code.join('\n'));
+
+            this.appendTreeView(id);
+
+            //** walv saves the inital info to WidgetPool && InfoPool
+
+            //Store Info that a widget was created from.
+            this.InfoPool_add(id, par, type);
+        },
+
+        makeID: function(type) {
+            var id = type + (this.widget_count++).toString(16);
+            return id;
+        },
+
+        appendTreeView(widget_name) {
+            let attributes = {
+                x: this.currJSON.get_x,
+                y: this.currJSON.get_y,
+                width: 0,
+                height: 0,
+            };
+            let newChild = {label: widget_name, children: [] };
+            this.$refs.TreeView.getCurrentNode().children.push(newChild);
+        },
+
+        tree_cb: function() {
+            let id = this.GetCurrWidget();
+            this.selected_node_id = id;
+            if (this.WidgetPool[id] == undefined) {
+                mp_js_do_str("getobjattr(" + id + ",\'" + id + "\')");
+            }
+            this.currJSON = this.WidgetPool[id];
+        },
+
+        cursorXY : function(event) {
+            this.cursorX = event.offsetX;
+            this.cursorY = event.offsetY;
+        },
+
+        GetCurrWidget: function() {
+            node = this.$refs.TreeView.getCurrentNode()
+            if (node != null) {
+                return node.label;
+            }
+            return null;
+        },
+
+        // Lock the widget, so it can't move anymore
+        // lock_widget: function() {
+        //     let drag_state = this.currJSON["get_drag"];
+        //     if(drag_state == true) {
+        //         drag_state = "True";
+        //     } else {
+        //         drag_state = "False";
+        //     }
+
+        //     mp_js_do_str(this.currJSON["id"] + ".set_drag(" + drag_state + ')');
+        // },
+
+
+        // Apply change to the widget: number
+        bind_widget_num: function(attribute_name) {
+
+            let get_fn_name = "get_" + attribute_name;
+            let set_fn_name = "set_" + attribute_name;
+            let value = this.currJSON[get_fn_name];
+
+            if(value == null) {
+                value = 0;
+            }
+
+            let str = this.currJSON["id"] + '.' + set_fn_name + '(' + value + ')';
+            mp_js_do_str(str);
+
+            this.InfoPool_modify(this.currJSON["id"], attribute_name);
+        },
+
+        // Apply change to the widget: boolean
+        bind_widget_bool: function(attribute_name) {
+
+            let get_fn_name = "get_" + attribute_name;
+            let set_fn_name = "set_" + attribute_name;
+            let value = this.currJSON[get_fn_name];
+
+            if(value == true) {
+                value = "True"
+            } else {
+                value = "False"
+            }
+
+            let str = this.currJSON["id"] + '.' + set_fn_name + '(' + value + ')';
+            mp_js_do_str(str);
+
+            this.InfoPool_reverse(this.currJSON["id"], attribute_name);
+        },
+
+        InfoPool_add: function(id, par_name, type) {
+            let info = {
+                type: type,
+                parent: par_name,
+                attributes: [],
+            };
+            this.InfoPool[id] = info;
+        },
+
+        // For text or number
+        InfoPool_modify: function(id, attribute_name) {
+            let index = this.InfoPool[id].attributes.indexOf(attribute_name);
+            if (index == -1) {
+                this.InfoPool[id].attributes.push(attribute_name);
+            }
+        },
+
+        //For boolean only
+        InfoPool_reverse: function(id, attribute_name) {
+            let index = this.InfoPool[id].attributes.indexOf(attribute_name);
+            if (index != -1) {
+                this.InfoPool[id].attributes.splice(index, 1);
+            } else {
+                this.InfoPool[id].attributes.push(attribute_name);
+            }
+        },
+    },
 }

@@ -26,6 +26,7 @@ function python_exporter(info, widget) {
     }
 
     console.log(code);
+    return code.join("\n");
 }
 
 
