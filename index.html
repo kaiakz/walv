@@ -24,7 +24,7 @@
 				width: 600px;
 				height: 400px;
 				box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-			};
+			}
 		</style>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.13.0/lib/theme-chalk/index.css">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/xterm.css" />
@@ -58,7 +58,10 @@
 							<el-switch v-model="mode" active-color="#13ce66" inactive-color="#ff4949" active-text="C" inactive-text="Python"></el-switch>
 						</el-menu-item>
 						<el-menu-item>
-							<el-button type="success" round>Export Code</el-button>
+							<el-button-group>
+								<el-button type="primary" round @click="code_generate">Generate</el-button>
+								<el-button type="success" round @click="code_export">Export</el-button>
+							  </el-button-group>
 						</el-menu-item>
 					</el-menu>
 				</el-header>

@@ -354,5 +354,16 @@ var walv_main = {
                 this.InfoPool[id].attributes.push(attribute_name);
             }
         },
+
+        code_generate: function() {
+            let preview_code = python_generator(this.InfoPool, this.WidgetPool);
+            this.editor.setValue(preview_code);
+        },
+
+        code_export: function() {
+            let code = this.editor.getValue();
+            let blob = new Blob([code], {type: "text/plain;charset=utf-8"});
+            saveAs(blob, "interface.py");
+        }
     },
 }

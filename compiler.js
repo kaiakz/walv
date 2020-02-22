@@ -1,5 +1,5 @@
 
-function python_exporter(info, widget) {
+function python_generator(info, widget) {
     let code = [];
 
     for (const key in info) {
@@ -25,11 +25,11 @@ function python_exporter(info, widget) {
         }
     }
 
-    console.log(code);
+    // console.log(code);
     return code.join("\n");
 }
 
 
-function c_exporter(info, widget) {
+function c_generator(info, widget) {
 
 }
