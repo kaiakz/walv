@@ -97,7 +97,7 @@ var walv_main = {
         editor: null,
         c_edit_mode: null,
         py_edit_mode: null,
-        mode: true, //true: c, false: python
+        is_c_mode: true, //true: c, false: python
 
         buffer: [],
         str_json: "",
@@ -233,7 +233,8 @@ var walv_main = {
             }
             mp_js_do_str(code.join('\n'));
 
-            this.appendTreeView(id);
+            //TODO: BUG
+            this.append_node(id);
 
             //** walv saves the inital info to WidgetPool && InfoPool
 
@@ -246,18 +247,22 @@ var walv_main = {
             return id;
         },
 
-        appendTreeView(widget_name) {
-            let attributes = {
-                x: this.currJSON.get_x,
-                y: this.currJSON.get_y,
-                width: 0,
-                height: 0,
-            };
-            let newChild = {label: widget_name, children: [] };
-            this.$refs.TreeView.getCurrentNode().children.push(newChild);
+        append_node(widget_name) {
+            let new_child = {label: widget_name, children: [] };
+            let node = this.$refs.TreeView.getCurrentNode();
+            if (node != null) {
+                node.children.push(new_child);
+            }
         },
 
-        tree_cb: function() {
+        // delete node and its childs(reverse)
+        delete_node() {
+            let node = this.$refs.TreeView.getCurrentNode();
+            reverse_del_node(node);
+        },
+
+
+        node_click_cb: function() {
             let id = this.GetCurrWidget();
             this.selected_node_id = id;
             if (this.WidgetPool[id] == undefined) {
@@ -366,4 +371,14 @@ var walv_main = {
             saveAs(blob, "interface.py");
         }
     },
+}
+
+const reverse_del_node = (node) => {
+    let childs = node.children;
+    for (const iter of childs) {
+        reverse_del_node(iter);
+        mp_js_do_str(iter.label + ".delete()");
+    }
+
+    childs.splice(0, childs.length);
 }

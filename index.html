@@ -55,7 +55,7 @@
 							<el-divider direction="vertical"></el-divider>
 						</el-menu-item>
 						<el-menu-item>
-							<el-switch v-model="mode" active-color="#13ce66" inactive-color="#ff4949" active-text="C" inactive-text="Python"></el-switch>
+							<el-switch v-model="is_c_mode" active-color="#13ce66" inactive-color="#ff4949" active-text="C" inactive-text="Python"></el-switch>
 						</el-menu-item>
 						<el-menu-item>
 							<el-button-group>
@@ -78,7 +78,7 @@
 									<el-tag>{{ selected_node_id }}</el-tag>
 									<el-button type="success" icon="el-icon-view"circle></el-button>	
 									<el-button type="warning" icon="el-icon-refresh-left" circle></el-button>
-									<el-button type="danger" icon="el-icon-delete" circle></el-button>									
+									<el-button type="danger" icon="el-icon-delete" @click="delete_node" circle></el-button>									
 								</el-row>
 								<el-row style="margin-top: 15px">
 								</el-row>
@@ -87,7 +87,7 @@
 						</div>
 						<el-tree
 							ref="TreeView"
-							:data="widget_tree" highlight-current  default-expand-all @node-click="tree_cb" >
+							:data="widget_tree" highlight-current  default-expand-all @node-click="node_click_cb" >
 						</el-tree>
 					</el-aside>
 
