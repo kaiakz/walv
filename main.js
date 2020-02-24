@@ -360,6 +360,12 @@ var walv_main = {
             }
         },
 
+        screenshot: function() {
+            document.getElementById("canvas").toBlob((blob) => {
+                saveAs(blob, "screenshot.png");
+            });
+        },
+
         code_generate: function() {
             let preview_code = python_generator(this.InfoPool, this.WidgetPool);
             this.editor.setValue(preview_code);
@@ -379,6 +385,5 @@ const reverse_del_node = (node) => {
         reverse_del_node(iter);
         mp_js_do_str(iter.label + ".delete()");
     }
-
     childs.splice(0, childs.length);
 }
