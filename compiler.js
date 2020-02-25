@@ -5,11 +5,11 @@ function python_generator(info, widget) {
     for (const key in info) {
         let id = key;
 
-        let par_name = info[key].parent;
+        let par_id = info[key].parent;
 
         let type = info[key].type;
 
-        code.push(id + " = lv." + type + '(' + par_name + ')');    //code: create, EX: btn0 = lv.btn(scr)
+        code.push(template_create(id, par_id, type));    //code: create, EX: btn0 = lv.btn(scr)
 
         const attributes = info[key].attributes;
         for (const attr of attributes) {

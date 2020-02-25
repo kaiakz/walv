@@ -137,19 +137,19 @@
 										<el-form-item label="ID">
 											<el-col :span="10"><em> {{ currJSON.id }} </em></el-col>
 											<el-col :span="7">
-												<i class="el-icon-lock">  </i><el-switch v-model="currJSON.get_drag" v-on:input="bind_widget_bool('drag')"></el-switch>
+												<i class="el-icon-lock">  </i><el-switch v-model="currJSON.drag" v-on:input="bind_widget_bool('drag')"></el-switch>
 											</el-col>
 											<el-col :span="7"><el-button type="warning" icon="el-icon-refresh-right" circle></el-button></el-col>
 										</el-form-item>																	
 										<el-form-item label="Postion">
 											<el-col :span="11">
-												<el-input placeholder="X" v-model="currJSON.get_x" v-on:input="bind_widget_num('x')">
+												<el-input placeholder="X" v-model="currJSON.x" v-on:input="bind_widget_num('x')">
 													<template slot="prepend">X</template>
 												</el-input>
 											</el-col>
 											<el-col class="line" :span="2">.</el-col>
 											<el-col :span="11">
-												<el-input placeholder="Y" v-model="currJSON.get_y"  v-on:input="bind_widget_num('y')">
+												<el-input placeholder="Y" v-model="currJSON.y"  v-on:input="bind_widget_num('y')">
 													<template slot="prepend">Y</template>
 												</el-input>
 											</el-col>
@@ -157,13 +157,13 @@
 									
 										<el-form-item label="Size">
 											<el-col :span="11">
-												<el-input placeholder="Width" v-model="currJSON.get_width"  v-on:input="bind_widget_num('width')">
+												<el-input placeholder="Width" v-model="currJSON.width"  v-on:input="bind_widget_num('width')">
 													<template slot="prepend">W</template>
 												</el-input>
 											</el-col>
 											<el-col class="line" :span="2">-</el-col>
 											<el-col :span="11">
-												<el-input placeholder="Height" v-model="currJSON.get_height" v-on:input="bind_widget_num('height')">
+												<el-input placeholder="Height" v-model="currJSON.height" v-on:input="bind_widget_num('height')">
 													<template slot="prepend">H</template>
 												</el-input>
 											</el-col>
@@ -171,16 +171,16 @@
 
 										<el-form-item label="Other">
 											<el-col :span="12">
-												  DRAG<el-switch v-model="currJSON.get_drag" v-on:input="bind_widget_bool('drag')"></el-switch>
+												  DRAG<el-switch v-model="currJSON.drag" v-on:input="bind_widget_bool('drag')"></el-switch>
 											</el-col>
 											<el-col :span="12">
-												CLICK<el-switch v-model="currJSON.get_click" v-on:input="bind_widget_bool('click')"></el-switch>
+												CLICK<el-switch v-model="currJSON.click" v-on:input="bind_widget_bool('click')"></el-switch>
 											</el-col>
 											<el-col :span="12">
-												HIDDEN<el-switch v-model="currJSON.get_hidden" v-on:input="bind_widget_bool('hidden')"></el-switch>
+												HIDDEN<el-switch v-model="currJSON.hidden" v-on:input="bind_widget_bool('hidden')"></el-switch>
 											</el-col>
 											<el-col :span="12">
-												TOP<el-switch v-model="currJSON.get_top" v-on:input="bind_widget_bool('top')"></el-switch>
+												TOP<el-switch v-model="currJSON.top" v-on:input="bind_widget_bool('top')"></el-switch>
 											</el-col>
 										</el-form-item>
 
@@ -212,6 +212,7 @@
 		<script src="lvgl_mp.js"></script>
 		<script src="data.js"></script>
 		<script src="main.js"></script>
+		<script src="wrapper.js"></script>
 		<script src="compiler.js"></script>
 	</body>
 </html>

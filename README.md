@@ -27,4 +27,9 @@ This repository continues to being used for improvements and further development
 * WASM part provides a Simulator.
 * The front-end component library provides a way to control Simulator: create,delete or modify a widget. Include attribute editor, style editor and animation editor.(Now use Bootstrap)
 * Generate final code by javascript, Use `Blob` to save file.
-* Continue your work in last closed window: By `Web Storage`.
+* Continue your work in last closed window: By `IndexedDB`.
+
+## How does it work?
+* `lv_micropython` has some JavaScript API: `mp_js_do_str()`(`lv_micropython` will excute the parameter, just like eval() in Python or JavaScript)
+* walv wraps some commonly used functions(see Getter & Setter), called `template`.
+* walv provides a layer over the `lv_micropython`, it can generate some real functions by `template`, and then send those functions to `lv_micropython` by `mp_js_do_str`. For example, if the user want to change the X of the btn0 to 88 , walv will use the `template` (id.set_x(integer)) to generate the `btn0.set_x(88)`, and then send it to lv_micropython by `mp_js_do_str("btn0.set_x(88)")`.

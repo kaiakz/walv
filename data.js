@@ -1,4 +1,4 @@
-const Widgets_opt = [
+const WidgetsOption = [
     {
         value: 'obj',
         label: "Object"            
@@ -89,11 +89,9 @@ const Widgets_opt = [
 
 ]
 
-// const other_attribute = ['DRAG', 'CLICK', 'HIDDEN', 'TOP'];
-
 
 //The Python code to Initialize the environment
-const lvEnv = [
+const EnvInitCode = [
     "import ujson",
     "import lvgl as lv",
     "lv.init()",
@@ -125,31 +123,39 @@ const lvEnv = [
 
 
 /* Define special function for python*/
-const DEF_FUN = [
+
+// old getobjattr() function:
+// "def getobjattr(obj,id,type_s):",
+// "    d={}",
+// "    d['id']=id",
+// "    for i in dir(obj):",
+// "        if 'get_' in i:",
+// "            try:",
+// "                ret = eval(id + '.' + i + '()')",
+// "                if isinstance(ret, (int,float,str,bool)):",
+// "                    d[i] = ret",
+// "            except:",
+// "                pass",
+// "    for i in ATTR:",
+// "        d[i]=eval(id+'.'+ATTR[i]+'()')",
+// "    print('\x06'+ujson.dumps(d)+'\x15')",
+
+const QueryCode = [
     //Get and send JSON format text
-    "def getobjattr(obj, id):",
+    "def query_attr(obj,id,type_s):",
     "    d={}",
     "    d['id']=id",
-    "    for i in dir(obj):",
-    "        if 'get_' in i:",
-    "            try:",
-    "                ret = eval(id + '.' + i + '()')",
-    "                if isinstance(ret, (int,float,str,bool)):",
-    "                    d[i] = ret",
-    "            except:",
-    "                pass",
+    "    for i in ATTR['obj']:",
+    "        d[i]=eval(id+'.'+ATTR['obj'][i]+'()')",
     "    print('\x06'+ujson.dumps(d)+'\x15')",
-    "def getxy(obj, id):",
-    "    d={}",
-    "    d['id']=id",
-    "    d['x']=obj.get_x()",
-    "    d['y']=obj.get_y()",
+    "def query_xy(obj,id):",
+    "    d={'id':id,'x':obj.get_x(),'y':obj.get_y()}",
     "    print('\x06'+ujson.dumps(d)+'\x15')",
     //Determine what event is:
     //Test b: b.set_event_cb(lambda obj=None, event=-1,name='b',real_obj=b:EventCB(real_obj,name,event))
-    "def EventCB(obj, id, event):",
+    "def walv_callback(obj,id,event):",
     "    if event == lv.EVENT.DRAG_END:",
-    "        getxy(obj, id)"
+    "        query_xy(obj, id)"
 ];
 
 

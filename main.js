@@ -3,7 +3,7 @@ var vm = null;
 
 
 window.onload = function() {
-    vm = new Vue(walv_main);
+    vm = new Vue(WALV_MAIN);
 
     /* Initialize the wasm mpy */
     mpylv_init(vm);
@@ -53,11 +53,11 @@ var mpylv_init = (vm) => {
     });
 
     /* Run init script */
-    for(var i = 0;i < lvEnv.length;i++){
-        mp_js_do_str(lvEnv[i]);
-    }
-    /* Add function getobjattr() & EventCB() */
-    mp_js_do_str(DEF_FUN.join('\n'));
+    mp_js_do_str(EnvInitCode.join('\n'));
+
+    /* Add function querry_attr() & walv_callback() */
+    mp_js_do_str(QueryCode.join('\n'));
+    wrap_equal("ATTR", JSON.stringify(Getter)); //Add ATTR to mpy, ATTR is common getter
 
     /*Setup lv_task_handler loop*/
     var the_mp_handle_pending = Module.cwrap('mp_handle_pending', null);
@@ -90,7 +90,7 @@ var editor_init = (vm) => {
 }
 
 
-var walv_main = {
+var WALV_MAIN = {
     el: "#walv",
 
     data: {
@@ -112,7 +112,7 @@ var walv_main = {
         cursorY: 0,
 
         //Creator
-        creator_options: Widgets_opt,
+        creator_options: WidgetsOption,
         props: {emitPath: false, expandTrigger: 'hover'},
         selected_type: "",
         widget_count: 0,
@@ -137,35 +137,31 @@ var walv_main = {
 
     watch: {
         //Parse string to JSON
-        str_json: function(val) {
+        str_json: function() {
             try {
 
-                // currJSON = JSON.parse(this.str_json);
                 let tmp = JSON.parse(this.str_json);
-                if(tmp['x'] != undefined) {
+                if(Object.keys(tmp).length == 3) {
                     this.posJSON = tmp;
 
                     //Update Postion
-                    this.WidgetPool[tmp['id']]['get_x'] = this.posJSON['x'];
-                    this.WidgetPool[tmp['id']]['get_y'] = this.posJSON['y'];
+                    this.WidgetPool[tmp['id']]['x'] = this.posJSON['x'];
+                    this.WidgetPool[tmp['id']]['y'] = this.posJSON['y'];
 
                     this.InfoPool_modify(tmp['id'], 'x');
                     this.InfoPool_modify(tmp['id'], 'y');
 
                     this.currJSON = this.WidgetPool[tmp['id']];
                 } else {
-                    // this.currJSON = Object.assign({}, j);
                     this.WidgetPool[tmp['id']] = tmp;
                     this.currJSON = this.WidgetPool[tmp['id']];
                 }
-                // console.log(this.currJSON);                    
             } catch (error) {
                 alert(error);
             }
         },
 
     },
-
 
     methods: {
         handle_stdout: function(text) {
@@ -218,20 +214,8 @@ var walv_main = {
             if(strPar === null){
                 par = '';
             }
-            // console.log(id);
-            var code = [
-                id + " = lv." + type + "(" + par + ")",
-                id + ".set_drag(1)",
-                id + ".set_protect(lv.PROTECT.PRESS_LOST)",
-                // "print(getobjattr(" + id + ",\'" + id + "\'))",
-                "getobjattr(" + id + ",\'" + id + "\')",
-                id + ".set_event_cb(lambda obj=None, event=-1, name=\'" + id + '\'' + ", real_obj =" + id + " : EventCB(real_obj, name, event))"
-            ];
-            const complexWidgets = ['ddlist', 'page', 'roller'];
-            if (complexWidgets.indexOf(type) != -1) {
-                code.push(id + ".get_child(None).set_drag_parent(1)");
-            }
-            mp_js_do_str(code.join('\n'));
+
+            wrap_create(id, par, type);
 
             //TODO: BUG
             this.append_node(id);
@@ -266,7 +250,11 @@ var walv_main = {
             let id = this.GetCurrWidget();
             this.selected_node_id = id;
             if (this.WidgetPool[id] == undefined) {
-                mp_js_do_str("getobjattr(" + id + ",\'" + id + "\')");
+                let type = "\'obj\'";
+                if (id != "screen") {
+                    type = this.InfoPool[id]['type'];
+                }
+                wrap_query_attr(id, type);
             }
             this.currJSON = this.WidgetPool[id];
         },
@@ -298,28 +286,25 @@ var walv_main = {
 
 
         // Apply change to the widget: number
-        bind_widget_num: function(attribute_name) {
+        bind_widget_num: function(attribute) {
 
-            let get_fn_name = "get_" + attribute_name;
-            let set_fn_name = "set_" + attribute_name;
-            let value = this.currJSON[get_fn_name];
+            let value = this.currJSON[attribute];
 
             if(value == null) {
                 value = 0;
             }
 
-            let str = this.currJSON["id"] + '.' + set_fn_name + '(' + value + ')';
-            mp_js_do_str(str);
+            let id = this.currJSON["id"];
 
-            this.InfoPool_modify(this.currJSON["id"], attribute_name);
+            wrap_simple_setter(id, attribute, value);
+
+            this.InfoPool_modify(id, attribute);
         },
 
         // Apply change to the widget: boolean
-        bind_widget_bool: function(attribute_name) {
+        bind_widget_bool: function(attribute) {
 
-            let get_fn_name = "get_" + attribute_name;
-            let set_fn_name = "set_" + attribute_name;
-            let value = this.currJSON[get_fn_name];
+            let value = this.currJSON[attribute];
 
             if(value == true) {
                 value = "True"
@@ -327,10 +312,11 @@ var walv_main = {
                 value = "False"
             }
 
-            let str = this.currJSON["id"] + '.' + set_fn_name + '(' + value + ')';
-            mp_js_do_str(str);
+            let id = this.currJSON["id"];
 
-            this.InfoPool_reverse(this.currJSON["id"], attribute_name);
+            wrap_simple_setter(id, attribute, value);
+
+            this.InfoPool_reverse(id, attribute);
         },
 
         InfoPool_add: function(id, par_name, type) {
@@ -378,6 +364,9 @@ var walv_main = {
         }
     },
 }
+
+
+
 
 const reverse_del_node = (node) => {
     let childs = node.children;
