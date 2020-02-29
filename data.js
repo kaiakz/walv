@@ -1,4 +1,4 @@
-ELEMENT.locale(ELEMENT.lang.en)
+ELEMENT.locale(ELEMENT.lang.en) //i18n
 
 const WidgetsOption = [
     {
@@ -153,8 +153,7 @@ const QueryCode = [
     "def query_xy(obj,id):",
     "    d={'id':id,'x':obj.get_x(),'y':obj.get_y()}",
     "    print('\x06'+ujson.dumps(d)+'\x15')",
-    //Determine what event is:
-    //Test b: b.set_event_cb(lambda obj=None, event=-1,name='b',real_obj=b:EventCB(real_obj,name,event))
+    //Callback: only for the lv.EVENT.DRAG_END
     "def walv_callback(obj,id,event):",
     "    if event == lv.EVENT.DRAG_END:",
     "        query_xy(obj, id)"
