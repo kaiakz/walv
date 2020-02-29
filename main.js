@@ -254,7 +254,7 @@ var WALV_MAIN = {
             }
         },
 
-        // delete node and its childs(reverse)
+        // FIXME: delete node and its childs(reverse)
         delete_node() {
             let node = this.$refs.TreeView.getCurrentNode();
             reverse_del_node(node);
@@ -383,8 +383,6 @@ var WALV_MAIN = {
         }
     },
 }
-
-
 
 
 const reverse_del_node = (node) => {
