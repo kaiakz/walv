@@ -1,3 +1,5 @@
+ELEMENT.locale(ELEMENT.lang.en)
+
 const WidgetsOption = [
     {
         value: 'obj',

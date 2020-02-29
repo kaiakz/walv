@@ -22,10 +22,18 @@ This repository continues to being used for improvements and further development
 * Save and load project. The tool will save your project automatically, and could restore your work from the last closed window.
 * Generate C and MicroPython code: includes GUI and Callback. Just add a function `lv_gui_main` in your code to use LittlevGL.(Doing)
 
+## Usage
+### Create
+1. Click a node of the treeview in the left(as the parent), for example, `screen`.
+2. Choose which widget you want, and then click the `+`.
+### Generat && Export the final code
+1. Click the `Generate` button to generate the source code, you can preview and edit the code in Code Editor.
+2. Click the `Export` button, you can download the code in Code Editor.
+
 ## Architecture
 * A static webpage built with [lv_micropython](https://github.com/littlevgl/lv_micropython)(WASM) and front-end component library. 
 * WASM part provides a Simulator.
-* The front-end component library provides a way to control Simulator: create,delete or modify a widget. Include attribute editor, style editor and animation editor.(Now use Bootstrap)
+* The front-end component library provides a way to control Simulator: create,delete or modify a widget. Include attribute editor, style editor and animation editor.
 * Generate final code by javascript, Use `Blob` to save file.
 * Continue your work in last closed window: By `IndexedDB`.
 

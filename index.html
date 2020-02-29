@@ -115,21 +115,24 @@
 
 						<div style="margin: 18px">
 							<i class="el-icon-toilet-paper">REPL Terminal</i>
-							<el-switch v-model="term_show"></el-switch>
+							<el-switch v-model="term_visible"></el-switch>
 							<i style="float: right;">X: {{cursorX}}, Y: {{cursorY}}</i>
 						</div>
 
-						<div id="mpy_repl" v-show="term_show" style="height:270px"></div>						
+						<div id="mpy_repl" v-show="term_visible" style="height:270px"></div>
 					</el-main>
 
 
 					<el-aside width="17%">
 						<div style="margin-top : 20px">
-							<el-radio-group>
-								<el-radio-button label="left">Attribute</el-radio-button>
-								<el-radio-button label="right">Style</el-radio-button>
-								<el-radio-button label="top">Animation</el-radio-button>
-							</el-radio-group>
+							<el-row>
+								<i class="el-icon-set-up"></i>
+								<el-button-group>
+									<el-button icon="el-icon-edit" @click="style_visible=true">Style</el-button>
+									<el-button icon="el-icon-edit">Animation</el-button>
+								</el-button-group>
+							</el-row>
+
 							<div style="margin: 20px;"></div>
 
 							<div id="setting_attribute">
@@ -187,22 +190,42 @@
 										<el-divider></el-divider>
 								</el-form>
 							</div>
-							<!-- <ul>
-								<li v-for="(value, key) in currJSON">
-									{{ key }} - {{ value }}
-								</li>
-							</ul> -->
+
+							<el-drawer
+							title="Style Editor"
+							:visible.sync="style_visible"
+							direction="rtl"
+							size="20%"
+							@closed="make_style">
+								<el-form ref="form" :model="style" label-width="80px">
+									<h5>Body</h5>
+									<el-form-item label="main_color">
+										<el-color-picker v-model="style.body.main_color"></el-color-picker>
+									</el-form-item>
+									<h5>Text</h5>
+									<el-form-item label="color">
+										<el-color-picker v-model="style.text.color"></el-color-picker>
+									</el-form-item>
+									<el-form-item label="font">
+										<el-radio v-model="style.text.font" label="font_roboto_16">font_roboto_16</el-radio>
+										<el-radio v-model="style.text.font" label="font_roboto_28">font_roboto_28</el-radio>
+									</el-form-item>
+								</el-form>
+							</el-drawer>
+
+
 						</div>
 					</el-aside>
 				</el-container>
 
 			</el-container>
 		</div>
-		
+
 		
 		<!-- scripts -->
-		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>	
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/element-ui@2.13.0/lib/index.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/element-ui@2.13.0/lib/umd/locale/en.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/xterm.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/addons/fit/fit.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.6/ace.js" type="text/javascript" charset="utf-8"></script>

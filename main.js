@@ -127,11 +127,26 @@ var WALV_MAIN = {
         selected_node_id: "",
 
         //Terminal
-        term_show: true,
+        term_visible: true,
 
-        // Watcher
-        // other_attr_option: other_attribute,
-        // other_attr: [],
+        // Style Editor
+        style_visible: false,
+        style: {
+            body: {
+                main_color: null,
+                grad_color: null,
+            },
+            text: {
+                color: "#409EFF",
+                font: "font_roboto_16",
+            },
+            image: {
+
+            },
+            line: {
+
+            },
+        }
     },
 
 
@@ -361,6 +376,10 @@ var WALV_MAIN = {
             let code = this.editor.getValue();
             let blob = new Blob([code], {type: "text/plain;charset=utf-8"});
             saveAs(blob, "interface.py");
+        },
+
+        make_style: function() {
+            wrap_simple_style(this.currJSON["id"], this.style);
         }
     },
 }
