@@ -48,7 +48,7 @@ const wrap_create = (id, parent_id, type_s) => {
     mp_js_do_str(code.join('\n'));
 }
 
-const wrap_query_attr = (id, type) => {
+const wrap_query_attr = (id, type_s) => {
     mp_js_do_str(`query_attr(${id},"${id}","${type_s}")`);
 }
 

@@ -97,7 +97,7 @@ var WALV_MAIN = {
         editor: null,
         c_edit_mode: null,
         py_edit_mode: null,
-        is_c_mode: true, //true: c, false: python
+        is_c_mode: false, //true: c, false: python
 
         buffer: [],
         str_json: "",
@@ -115,16 +115,23 @@ var WALV_MAIN = {
         creator_options: WidgetsOption,
         props: {emitPath: false, expandTrigger: 'hover'},
         selected_type: "",
-        widget_count: 0,
+        WidgetNum: 0,
 
         //TreeView
         widget_tree: [
             {
-                label: 'screen',
+                label: "screen",
                 children: []
-            }
+            },
+            // {
+            //     label: "",
+            //     children: []
+            // }
         ],
-        selected_node_id: "",
+        CheckedNode: {
+            id: "",
+            obj: null,
+        },
 
         //Terminal
         term_visible: true,
@@ -205,20 +212,28 @@ var WALV_MAIN = {
         Creator: function() {
             if (this.selected_type == "") {
                 this.$message({
-                    message: 'Please Select A Type What You Want To Create',
+                    message: 'Please select a type',
                     type: 'warning'
                 });
             } else {
-                let curr_widget = this.GetCurrWidget();
-                if (curr_widget === null) {
+                let parent_id = this.get_curr_id();
+                // TODO: remove
+                // if (curr_widget === null) {
+                //     this.$message({
+                //         message: 'You Are Creating A Widget Invisible',
+                //         type: 'warning'
+                //     });
+                //     this.CreateWidget(this.selected_type, null);
+                // } else {
+                //     this.CreateWidget(this.selected_type, curr_widget);
+                // }
+                if (parent_id == "") {
                     this.$message({
-                        message: 'You Are Creating A Widget Invisible',
+                        message: 'You created a widget invisible',
                         type: 'warning'
                     });
-                    this.CreateWidget(this.selected_type, null);
-                } else {
-                    this.CreateWidget(this.selected_type, curr_widget);
                 }
+                this.CreateWidget(this.selected_type, parent_id);
             }
         },
 
@@ -226,9 +241,10 @@ var WALV_MAIN = {
         CreateWidget: function(type, strPar) {
             var id = this.makeID(type);
             var par = strPar;
-            if(strPar === null){
-                par = '';
-            }
+            // TODO: remove
+            // if(strPar === null){
+            //     par = "";
+            // }
 
             wrap_create(id, par, type);
 
@@ -242,12 +258,14 @@ var WALV_MAIN = {
         },
 
         makeID: function(type) {
-            var id = type + (this.widget_count++).toString(16);
+            var id = type + (this.WidgetNum++).toString(16);
             return id;
         },
 
         append_node(widget_name) {
-            let new_child = {label: widget_name, children: [] };
+            let new_child = {
+                label: widget_name,
+                children: [] };
             let node = this.$refs.TreeView.getCurrentNode();
             if (node != null) {
                 node.children.push(new_child);
@@ -255,15 +273,19 @@ var WALV_MAIN = {
         },
 
         // FIXME: delete node and its childs(reverse)
-        delete_node() {
+        delete_node: function() {
             let node = this.$refs.TreeView.getCurrentNode();
+            console.log(node);
             reverse_del_node(node);
+            this.$refs.TreeView.remove(node.id);
         },
 
+        // https://element.eleme.cn/#/en-US/component/tree
+        node_click_cb: function(data, obj, tree_obj) {
+            this.CheckedNode.id = data.label;
+            this.CheckedNode.obj = obj;
 
-        node_click_cb: function() {
-            let id = this.GetCurrWidget();
-            this.selected_node_id = id;
+            let id = data.label;
             if (this.WidgetPool[id] == undefined) {
                 let type = "\'obj\'";
                 if (id != "screen") {
@@ -279,12 +301,13 @@ var WALV_MAIN = {
             this.cursorY = event.offsetY;
         },
 
-        GetCurrWidget: function() {
-            node = this.$refs.TreeView.getCurrentNode()
-            if (node != null) {
-                return node.label;
-            }
-            return null;
+        get_curr_id: function() {
+            return this.CheckedNode.id;
+            // node = this.$refs.TreeView.getCurrentNode()
+            // if (node != null) {
+            //     return node.label;
+            // }
+            // return null;
         },
 
         // Lock the widget, so it can't move anymore
@@ -370,10 +393,18 @@ var WALV_MAIN = {
         code_generate: function() {
             let preview_code = python_generator(this.InfoPool, this.WidgetPool);
             this.editor.setValue(preview_code);
+            this.$message({
+                message: 'Generate code sucessfully',
+                type: 'success'
+            });
         },
 
         code_export: function() {
             let code = this.editor.getValue();
+            this.$message({
+                message: 'Export file sucessfully',
+                type: 'success'
+            });
             let blob = new Blob([code], {type: "text/plain;charset=utf-8"});
             saveAs(blob, "interface.py");
         },

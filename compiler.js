@@ -13,9 +13,8 @@ function python_generator(info, widget) {
 
         const attributes = info[key].attributes;
         for (const attr of attributes) {
-            let get_attr = `get_${attr}`;
             let set_attr = `set_${attr}`;
-            let value = widget[id][get_attr];
+            let value = widget[id][attr];
             if (value == true) {
                 value = "True";
             } else if (value == false) {

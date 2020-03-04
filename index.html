@@ -70,12 +70,12 @@
 					<el-aside width="17%">
 						<div style="margin-top: 20px;text-align: center">
 							<el-cascader :options="creator_options" :show-all-levels="false" :props="props" v-model="selected_type"></el-cascader>
-							<el-badge :value="widget_count" class="item">
+							<el-badge :value="WidgetNum" class="item">
 								<el-button type="primary" icon="el-icon-plus" @click="Creator" circle></el-button>
 							</el-badge>
 							<div style="margin: 15px;">
 								<el-row>
-									<el-tag>{{ selected_node_id }}</el-tag>
+									<el-tag>{{ CheckedNode.id }}</el-tag>
 									<el-button type="success" icon="el-icon-view"circle></el-button>	
 									<el-button type="warning" icon="el-icon-refresh-left" circle></el-button>
 									<el-button type="danger" icon="el-icon-delete" @click="delete_node" circle></el-button>									
@@ -98,7 +98,7 @@
 								<div id="mp_js_stdout" style="text-align: center">
 									<canvas id="canvas" 
 										oncontextmenu="event.preventDefault()" 
-										onmousedown="this.style.cursor='move'" onmouseup="this.style.cursor='default'" 
+										onmousedown="this.style.cursor='move'" onmouseup="this.style.cursor='default'"
 										@mousemove="cursorXY"
 										tabindex="-1">
 									</canvas>
