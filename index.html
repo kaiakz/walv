@@ -114,8 +114,9 @@
 						</el-tabs>
 
 						<div style="margin: 18px">
-							<i class="el-icon-toilet-paper">REPL Terminal</i>
+							<i class="el-icon-monitor">REPL Terminal</i>
 							<el-switch v-model="term_visible"></el-switch>
+							<el-button icon="el-icon-refresh" circle @click="refresh_repl"></el-button>
 							<i style="float: right;">X: {{cursorX}}, Y: {{cursorY}}</i>
 						</div>
 

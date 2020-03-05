@@ -48,12 +48,21 @@ const wrap_create = (id, parent_id, type_s) => {
     mp_js_do_str(code.join('\n'));
 }
 
+const wrap_delete = (id) => {
+    mp_js_do_str(`${id}.delete()`);
+}
+
+
 const wrap_query_attr = (id, type_s) => {
     mp_js_do_str(`query_attr(${id},"${id}","${type_s}")`);
 }
 
 const wrap_simple_setter = (id, attr, param) => {
     mp_js_do_str(`${id}.set_${attr}(${param})`);
+}
+
+const wrap_refresh = () => {
+    
 }
 
 // Convert '#ffffff' to '0xffffff'

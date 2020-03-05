@@ -116,6 +116,7 @@ var WALV_MAIN = {
         props: {emitPath: false, expandTrigger: 'hover'},
         selected_type: "",
         WidgetNum: 0,
+        Count: 0,
 
         //TreeView
         widget_tree: [
@@ -123,13 +124,14 @@ var WALV_MAIN = {
                 label: "screen",
                 children: []
             },
-            // {
-            //     label: "",
-            //     children: []
-            // }
+            // For invisible
+            {
+                label: "",
+                children: []
+            }
         ],
         CheckedNode: {
-            id: "",
+            id: null,
             obj: null,
         },
 
@@ -217,16 +219,13 @@ var WALV_MAIN = {
                 });
             } else {
                 let parent_id = this.get_curr_id();
-                // TODO: remove
-                // if (curr_widget === null) {
-                //     this.$message({
-                //         message: 'You Are Creating A Widget Invisible',
-                //         type: 'warning'
-                //     });
-                //     this.CreateWidget(this.selected_type, null);
-                // } else {
-                //     this.CreateWidget(this.selected_type, curr_widget);
-                // }
+                if (parent_id === null) {
+                    this.$message({
+                        message: 'You must choose a widget!',
+                        type: 'error'
+                    });
+                    this.CreateWidget(this.selected_type, null);
+                }
                 if (parent_id == "") {
                     this.$message({
                         message: 'You created a widget invisible',
@@ -241,10 +240,6 @@ var WALV_MAIN = {
         CreateWidget: function(type, strPar) {
             var id = this.makeID(type);
             var par = strPar;
-            // TODO: remove
-            // if(strPar === null){
-            //     par = "";
-            // }
 
             wrap_create(id, par, type);
 
@@ -257,8 +252,10 @@ var WALV_MAIN = {
             this.InfoPool_add(id, par, type);
         },
 
+        // Increase by 1
         makeID: function(type) {
-            var id = type + (this.WidgetNum++).toString(16);
+            let id = type + (this.Count++).toString(16);
+            this.WidgetNum += 1;
             return id;
         },
 
@@ -272,12 +269,36 @@ var WALV_MAIN = {
             }
         },
 
-        // FIXME: delete node and its childs(reverse)
+        // Delete node and its childs(reverse)
         delete_node: function() {
-            let node = this.$refs.TreeView.getCurrentNode();
-            console.log(node);
-            reverse_del_node(node);
-            this.$refs.TreeView.remove(node.id);
+            const node = this.CheckedNode.obj;
+            const id = this.CheckedNode.id;
+
+            if (id == "screen" || id == "") {
+                this.$message({
+                    message: "You can't delete the screen or nothing!",
+                    type: 'error'
+                });
+                return; // Not support delete screen now
+            }
+            // delete child
+            let tmp = {sum: 1}; // Conut how many child was deleted
+            reverse_del_node(node.data, tmp);
+
+            // delete itself
+            const children = node.parent.data.children;
+            const index = children.findIndex(d => d.label === id);
+            wrap_delete(id);
+            children.splice(index, 1);
+            this.WidgetNum -= tmp.sum;
+            // Clear this.CheckedNode
+            this.CheckedNode.obj = null;
+            this.CheckedNode.id = null
+
+            this.$message({
+                message: 'Delete sucessfully',
+                type: 'success'
+            });
         },
 
         // https://element.eleme.cn/#/en-US/component/tree
@@ -286,6 +307,9 @@ var WALV_MAIN = {
             this.CheckedNode.obj = obj;
 
             let id = data.label;
+            if (id == "") {// NOTICE
+                return;
+            }
             if (this.WidgetPool[id] == undefined) {
                 let type = "\'obj\'";
                 if (id != "screen") {
@@ -384,6 +408,8 @@ var WALV_MAIN = {
             }
         },
 
+        refresh_repl: () =>{wrap_refresh()},
+
         screenshot: function() {
             document.getElementById("canvas").toBlob((blob) => {
                 saveAs(blob, "screenshot.png");
@@ -416,11 +442,12 @@ var WALV_MAIN = {
 }
 
 
-const reverse_del_node = (node) => {
+const reverse_del_node = (node, count) => {
     let childs = node.children;
     for (const iter of childs) {
-        reverse_del_node(iter);
-        mp_js_do_str(iter.label + ".delete()");
+        reverse_del_node(iter, count);
+        wrap_delete(iter.label);
+        count.sum += 1;
     }
     childs.splice(0, childs.length);
 }
