@@ -282,18 +282,24 @@ var WALV_MAIN = {
                 return; // Not support delete screen now
             }
             // delete child
-            let tmp = {sum: 1}; // Conut how many child was deleted
-            reverse_del_node(node.data, tmp);
+            let record = [id]; // Which child was deleted
+            reverse_del_node(node.data, record);
 
             // delete itself
             const children = node.parent.data.children;
             const index = children.findIndex(d => d.label === id);
             wrap_delete(id);
             children.splice(index, 1);
-            this.WidgetNum -= tmp.sum;
+            this.WidgetNum -= record.length;
+
             // Clear this.CheckedNode
             this.CheckedNode.obj = null;
             this.CheckedNode.id = null
+
+            // Remove the related info
+            pool_delete(this.WidgetPool, record);
+            pool_delete(this.InfoPool, record);
+            this.currJSON = this.WidgetPool['screen'];
 
             this.$message({
                 message: 'Delete sucessfully',
@@ -442,12 +448,18 @@ var WALV_MAIN = {
 }
 
 
-const reverse_del_node = (node, count) => {
+const reverse_del_node = (node, record) => {
     let childs = node.children;
     for (const iter of childs) {
-        reverse_del_node(iter, count);
+        reverse_del_node(iter, record);
         wrap_delete(iter.label);
-        count.sum += 1;
+        record.push(iter.label);
     }
     childs.splice(0, childs.length);
+}
+
+const pool_delete = (pool, list) => {
+    for (const i of list) {
+        delete pool[i];
+    }
 }

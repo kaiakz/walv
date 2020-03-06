@@ -23,8 +23,6 @@ function python_generator(info, widget) {
             code.push(`${id}.${set_attr}(${value})`);
         }
     }
-
-    // console.log(code);
     return code.join("\n");
 }
 
