@@ -1,13 +1,13 @@
-const template_create = (id, parent_id, type) => {
+const template_py_create = (id, parent_id, type) => {
     return `${id} = lv.${type}(${parent_id})`;
 }
 
 
-const template_setter_number = (id, attr, param) => {
+const template_py_setter_number = (id, attr, param) => {
     return `${id}.set_${attr}(${param})`;
 }
 
-const template_setter_boolean = (id, attr, param) => {
+const template_py_setter_boolean = (id, attr, param) => {
     let value = "True";
     if (param == false) {
         value = "False";
@@ -15,8 +15,20 @@ const template_setter_boolean = (id, attr, param) => {
     return `${id}.set_${attr}(${value})`;
 }
 
-const template_setter_text = (id, attr, param) => {
+const template_py_setter_text = (id, attr, param) => {
     return `${id}.set_${attr}("${param}")`;
+}
+
+const template_py_setter_simple = (id, attr, param) => {
+    return `${id}.set_${attr}(${param})`;
+}
+
+const template_c_create = (id, parent_id, type) => {
+    return `lv_obj_t * ${id} = lv_${type}_create(${parent_id}, NULL);`;
+}
+
+const template_c_setter_simple = (id, type, attr, param) => {
+    return `lv_${type}_set_${attr}(${id}, ${param});`;
 }
 
 // id = expr
@@ -62,7 +74,7 @@ const wrap_simple_setter = (id, attr, param) => {
 }
 
 const wrap_refresh = () => {
-    
+
 }
 
 // Convert '#ffffff' to '0xffffff'

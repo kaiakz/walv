@@ -16,7 +16,7 @@ window.onload = function() {
 
 
 
-var mpylv_init = (vm) => {
+const mpylv_init = (vm) => {
 
     Module.canvas = document.getElementById("canvas");
 
@@ -74,7 +74,7 @@ var mpylv_init = (vm) => {
 }
 
 
-var editor_init = (vm) => {
+const editor_init = (vm) => {
     let editor = ace.edit("code-editor");
     editor.getSession().setUseWrapMode(true);
     editor.setAutoScrollEditorIntoView(true);
@@ -90,7 +90,7 @@ var editor_init = (vm) => {
 }
 
 
-var WALV_MAIN = {
+const WALV_MAIN = {
     el: "#walv",
 
     data: {
@@ -423,7 +423,12 @@ var WALV_MAIN = {
         },
 
         code_generate: function() {
-            let preview_code = python_generator(this.InfoPool, this.WidgetPool);
+            let preview_code = "";
+            if (this.is_c_mode) {
+                preview_code = c_generator(this.InfoPool, this.WidgetPool);
+            } else {
+               preview_code = python_generator(this.InfoPool, this.WidgetPool);
+            }
             this.editor.setValue(preview_code);
             this.$message({
                 message: 'Generate code sucessfully',
@@ -438,7 +443,11 @@ var WALV_MAIN = {
                 type: 'success'
             });
             let blob = new Blob([code], {type: "text/plain;charset=utf-8"});
-            saveAs(blob, "interface.py");
+            if (this.is_c_mode) {
+                saveAs(blob, "lv_gui.c");
+            } else {
+                saveAs(blob, "lv_gui.py");
+            }
         },
 
         make_style: function() {

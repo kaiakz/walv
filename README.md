@@ -7,6 +7,7 @@ Make sure your browser is the latest version(Chrome, Firefox and Safari).
 ![style_editor](https://user-images.githubusercontent.com/51747223/75605140-0e46ff80-5b1b-11ea-9260-f0c9ad87dc5a.gif)
 
 ## Usage
+You need a browser firstly(Recommends PC with 1920x1080), and then visit [the github page](https://kaiakz.github.io/walv/index.html) or just run an HTTP server(`python -m http.server`) that serves files from this directory.
 ### Create
 1. Click a node of the treeview in the left(as the parent), for example, `screen`.
 2. Choose which widget you want, and then click the `+`.
@@ -25,7 +26,7 @@ Make sure your browser is the latest version(Chrome, Firefox and Safari).
 * TFT_simulator can be customized(size), supports mutiple windows.(To do)
 * Animation Editor(planning).
 * Save and load project. The tool will save your project automatically, and could restore your work from the last closed window.
-* Generate C and MicroPython code: includes GUI and Callback. Just add a function `lv_gui_main` in your code to use LittlevGL.(Working)
+* Generate C and MicroPython code: includes GUI and Callback.
 
 ## Architecture
 * A static webpage built with [lv_micropython](https://github.com/littlevgl/lv_micropython)(WASM) and front-end component library. 
