@@ -176,6 +176,8 @@ const WALV_MAIN = {
                     this.InfoPool_modify(tmp['id'], 'y');
 
                     this.currJSON = this.WidgetPool[tmp['id']];
+
+                    this.draw_rect(this.currJSON.x, this.currJSON.y, this.currJSON.width, this.currJSON.height);
                 } else {
                     this.WidgetPool[tmp['id']] = tmp;
                     this.currJSON = this.WidgetPool[tmp['id']];
@@ -452,6 +454,15 @@ const WALV_MAIN = {
 
         make_style: function() {
             wrap_simple_style(this.currJSON["id"], this.style);
+        },
+
+        draw_rect: (x, y, w, h) => {
+            //Highlight object
+            let ctx = document.getElementById("canvas").getContext("2d");
+            ctx.strokeStyle="red";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5,5]);
+            ctx.strokeRect(x, y, w, h);
         }
     },
 }
