@@ -16,13 +16,15 @@ You need a browser firstly(Recommends PC with 1920x1080), and then visit [the gi
 2. Click the `Export` button, you can download the code in Code Editor.
 
 ## Feature
-* Just a static webpage, you need to use it with **the latest browser**(FireFox, Chrome...even IOS Safari).
-* Create object based on an object. Support parent-child structure.
+* WYSIWYG, MVVM(attribute).
+* Just a **static** web app, you need to use it with **the latest browser**(FireFox, Chrome...even IOS Safari).
 * Drag and drop to control the postion of the widget.
-* Style Editor(initial).
-* Screenshot.
+* Choose an object as the parent, and then create children on it.
 * Set attribute(postion, size, click, etc).
-* Code Preview : ACE-Editor.
+* Style Editor(initial, now for text only).
+* Screenshot.
+* Code Preview.
+* Highlight(initial).
 * TFT_simulator can be customized(size), supports mutiple windows.(To do)
 * Animation Editor(planning).
 * Save and load project. The tool will save your project automatically, and could restore your work from the last closed window.
