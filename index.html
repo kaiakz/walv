@@ -141,10 +141,10 @@
 										<el-form-item label="ID">
 											<el-col :span="10"><em> {{ currJSON.id }} </em></el-col>
 											<el-col :span="7">
-												<i class="el-icon-lock">  </i><el-switch v-model="currJSON.drag" v-on:input="bind_widget_bool('drag')"></el-switch>
+												<i class="el-icon-lock"></i><el-switch v-model="currJSON.drag" v-on:input="bind_widget_bool('drag')"></el-switch>
 											</el-col>
-											<el-col :span="7"><el-button type="warning" icon="el-icon-refresh-right" circle></el-button></el-col>
-										</el-form-item>																	
+											<el-col :span="7"><el-button type="warning" icon="el-icon-plus" @click="InfoPool_setCB(currJSON.id)">CB</el-button></el-col>
+										</el-form-item>
 										<el-form-item label="Postion">
 											<el-col :span="11">
 												<el-input placeholder="X" v-model="currJSON.x" v-on:input="bind_widget_num('x')">

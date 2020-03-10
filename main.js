@@ -11,7 +11,7 @@ window.onload = function() {
     /* Initialize the ace editor */
     editor_init(vm);
 
-    document.title = "WALV: the Online Designer For LittlevGL";
+    document.title = "WALV: The Online Designer For LittlevGL";
 }
 
 
@@ -217,8 +217,9 @@ const WALV_MAIN = {
             if (this.selected_type == "") {
                 this.$message({
                     message: 'Please select a type',
-                    type: 'warning'
+                    type: 'error'
                 });
+                return;
             } else {
                 let parent_id = this.get_curr_id();
                 if (parent_id === null) {
@@ -226,13 +227,14 @@ const WALV_MAIN = {
                         message: 'You must choose a widget!',
                         type: 'error'
                     });
-                    this.CreateWidget(this.selected_type, null);
+                    return;
                 }
                 if (parent_id == "") {
                     this.$message({
                         message: 'You created a widget invisible',
                         type: 'warning'
                     });
+
                 }
                 this.CreateWidget(this.selected_type, parent_id);
             }
@@ -393,6 +395,7 @@ const WALV_MAIN = {
             let info = {
                 type: type,
                 parent: par_name,
+                cb: false,
                 attributes: [],
             };
             this.InfoPool[id] = info;
@@ -414,6 +417,10 @@ const WALV_MAIN = {
             } else {
                 this.InfoPool[id].attributes.push(attribute_name);
             }
+        },
+
+        InfoPool_setCB: function(id) {
+            this.InfoPool[id].cb = true;
         },
 
         refresh_repl: () =>{wrap_refresh()},

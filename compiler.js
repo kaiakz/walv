@@ -11,6 +11,10 @@ function python_generator(info, widget) {
 
         code.push(template_py_create(id, par_id, type));    //code: create, EX: btn0 = lv.btn(scr)
 
+        if (info[id].cb) {
+            code.push(template_py_cb(id));
+        }
+
         const attributes = info[key].attributes;
         for (const attr of attributes) {
             let value = widget[id][attr];

@@ -31,6 +31,10 @@ const template_c_setter_simple = (id, type, attr, param) => {
     return `lv_${type}_set_${attr}(${id}, ${param});`;
 }
 
+const template_py_cb = (id) => {
+    return `${id}.set_event_cb(lambda : ) #Put your code here`
+}
+
 // id = expr
 const wrap_equal = (id, expr) => {
     mp_js_do_str(`${id}=${expr}`);
