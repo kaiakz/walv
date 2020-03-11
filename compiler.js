@@ -31,7 +31,7 @@ function python_generator(info, widget) {
 
 
 function c_generator(info, widget) {
-    let code = [];
+    let body = [], cb = [];
 
     for (const key in info) {
         let id = key;
@@ -40,14 +40,23 @@ function c_generator(info, widget) {
 
         let type = info[key].type;
 
-        code.push(template_c_create(id, par_id, type));    //code: create, EX: btn0 = lv.btn(scr)
+        if(info[key].cb) {
+            cb.push(id);
+        }
+
+        body.push(template_c_create(id, par_id, type));    //code: create, EX: btn0 = lv.btn(scr)
 
         const attributes = info[key].attributes;
         for (const attr of attributes) {
             let value = widget[id][attr];
 
-            code.push(template_c_setter_simple(id, "obj", attr, value));
+            body.push(template_c_setter_simple(id, "obj", attr, value));
         }
     }
-    return code.join("\n");
+    let cb_s = [];
+    for (const id of cb) {
+        cb_s.push(template_c_cb(id));
+    }
+
+    return template_c_all(body.join("\n"), cb_s.join("\n"));
 }

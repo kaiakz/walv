@@ -453,7 +453,7 @@ const WALV_MAIN = {
             });
             let blob = new Blob([code], {type: "text/plain;charset=utf-8"});
             if (this.is_c_mode) {
-                saveAs(blob, "lv_gui.c");
+                saveAs(blob, "lv_gui.h");
             } else {
                 saveAs(blob, "lv_gui.py");
             }
