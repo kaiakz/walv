@@ -73,7 +73,7 @@ const mpylv_init = (vm) => {
     handle_pending();
 }
 
-
+// Init the ace editor
 const editor_init = (vm) => {
     let editor = ace.edit("code-editor");
     editor.getSession().setUseWrapMode(true);
@@ -130,6 +130,7 @@ const WALV_MAIN = {
                 children: []
             }
         ],
+        // Which node in TreeView was checked
         CheckedNode: {
             id: null,
             obj: null,
@@ -190,6 +191,7 @@ const WALV_MAIN = {
     },
 
     methods: {
+        // Handle the information(strats with \x06, end with \x15)
         handle_stdout: function(text) {
             if(text == '\x15')      //End: '\x15'
             {
@@ -263,6 +265,7 @@ const WALV_MAIN = {
             return id;
         },
 
+        // Append new node to TreeView
         append_node(widget_name) {
             let new_child = {
                 label: widget_name,
@@ -311,6 +314,7 @@ const WALV_MAIN = {
             });
         },
 
+        // When the node is clicked, walv will: change the CheckedNode, set new id for label, update the Setting
         // https://element.eleme.cn/#/en-US/component/tree
         node_click_cb: function(data, obj, tree_obj) {
             this.CheckedNode.id = data.label;
@@ -330,11 +334,13 @@ const WALV_MAIN = {
             this.currJSON = this.WidgetPool[id];
         },
 
+        // Update the X & Y below the Simulator
         cursorXY : function(event) {
             this.cursorX = event.offsetX;
             this.cursorY = event.offsetY;
         },
 
+        // Get the id of recently checked node
         get_curr_id: function() {
             return this.CheckedNode.id;
             // node = this.$refs.TreeView.getCurrentNode()
@@ -391,6 +397,7 @@ const WALV_MAIN = {
             this.InfoPool_reverse(id, attribute);
         },
 
+        // Add some information for the new widget to InfoPool
         InfoPool_add: function(id, par_name, type) {
             let info = {
                 type: type,
@@ -419,18 +426,21 @@ const WALV_MAIN = {
             }
         },
 
+        // User enable CallBack template
         InfoPool_setCB: function(id) {
             this.InfoPool[id].cb = true;
         },
 
         refresh_repl: () =>{wrap_refresh()},
 
+        // Take a screenshot for the Simulator
         screenshot: function() {
             document.getElementById("canvas").toBlob((blob) => {
                 saveAs(blob, "screenshot.png");
             });
         },
 
+        // Generate the code and print them to the editor.
         code_generate: function() {
             let preview_code = "";
             if (this.is_c_mode) {
@@ -445,6 +455,7 @@ const WALV_MAIN = {
             });
         },
 
+        // Export the code in editor as a file.
         code_export: function() {
             let code = this.editor.getValue();
             this.$message({
@@ -459,12 +470,13 @@ const WALV_MAIN = {
             }
         },
 
+        // Set the style
         make_style: function() {
             wrap_simple_style(this.currJSON["id"], this.style);
         },
 
+        //Highlight object
         draw_rect: (x, y, w, h) => {
-            //Highlight object
             let ctx = document.getElementById("canvas").getContext("2d");
             ctx.strokeStyle="red";
             ctx.lineWidth = 2;

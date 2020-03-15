@@ -1,3 +1,4 @@
+/* generate the C or Python code to a file */
 
 function python_generator(info, widget) {
     let code = [];

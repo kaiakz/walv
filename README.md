@@ -12,7 +12,7 @@ You need a browser firstly(Recommends PC with 1920x1080), and then visit [the gi
 1. Click a node of the treeview in the left(as the parent), for example, `screen`.
 2. Choose which widget you want, and then click the `+`.
 ### Generat && Export the final code
-1. Click the `Generate` button to generate the source code, you can preview and edit the code in Code Editor.
+1. Click the `Generate` button to generate the source code, you can preview and edit the code in Code Editor. (You need to re-generate after modifying the widget)
 2. Click the `Export` button, you can download the code in Code Editor.
 
 ## Feature

@@ -1,3 +1,5 @@
+/* template: generate the related code and return as string */
+
 const template_py_create = (id, parent_id, type) => {
     return `${id} = lv.${type}(${parent_id})`;
 }

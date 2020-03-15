@@ -1,3 +1,4 @@
+/* wrapper: generate the related code, then use `mp_js_do_str` to excute them. */
 
 // id = expr
 const wrap_equal = (id, expr) => {
