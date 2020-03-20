@@ -172,8 +172,8 @@ const Getter = {
         "top": "get_top",
     },
 
-    "text": {
-        "text": "get_text",
+    "label": {
+        "label": "get_text",
     }
 
 }
@@ -189,8 +189,14 @@ const Setter = {
         "hidden": "set_hidden",
         "top": "set_top",
     },
-
-    "text": {
+    "btn": {
+        "state": "set_state",
+        "toggle": "set_toggle",
+        "ink_wait_time": "set_ink_wait_time",
+        "ink_in_time": "set_ink_in_time",
+    },
+    "label": {
         "text": "set_text",
     }
 }
+

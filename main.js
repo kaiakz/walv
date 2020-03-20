@@ -26,7 +26,7 @@ const mpylv_init = (vm) => {
 
     /* Initialize the xtermjs */
     Terminal.applyAddon(fit);
-    let term = new Terminal({
+    var term = new Terminal({
       cursorBlink: true,
     //   theme: {
     //     background: '#fdf6e3'
@@ -51,6 +51,8 @@ const mpylv_init = (vm) => {
             mp_js_process_char(key.charCodeAt(i));
         }
     });
+
+    vm.Term = term;
 
     /* Run init script */
     mp_js_do_str(EnvInitCode.join('\n'));
@@ -98,6 +100,7 @@ const WALV_MAIN = {
         c_edit_mode: null,
         py_edit_mode: null,
         is_c_mode: false, //true: c, false: python
+        Term: null,
 
         buffer: [],
         str_json: "",
@@ -431,7 +434,9 @@ const WALV_MAIN = {
             this.InfoPool[id].cb = true;
         },
 
-        refresh_repl: () =>{wrap_refresh()},
+        refresh_repl: function() {
+            this.Term.write(">>>");
+        },
 
         // Take a screenshot for the Simulator
         screenshot: function() {
