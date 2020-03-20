@@ -435,7 +435,8 @@ const WALV_MAIN = {
         },
 
         refresh_repl: function() {
-            this.Term.write(">>>");
+            this.Term.clear();
+            this.Term.write("\r\x1b[K>>> ");
         },
 
         // Take a screenshot for the Simulator
