@@ -197,6 +197,9 @@ const Setter = {
     },
     "label": {
         "text": "set_text",
+    },
+    "led": {
+        
     }
 }
 
