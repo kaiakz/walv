@@ -31,7 +31,7 @@ You need a browser firstly(Recommends PC with 1920x1080), and then visit [the gi
 * Generate C and MicroPython code: includes GUI and Callback.
 
 ## Architecture
-* A static webpage built with [lv_micropython](https://github.com/littlevgl/lv_micropython)(WASM) and front-end component library. 
+* A static webpage built with [lv_micropython](https://github.com/littlevgl/lv_micropython)(WASM) and front-end component library, so walv won't send your data to the server.
 * WASM part provides a Simulator.
 * The front-end component library provides a way to control Simulator: create,delete or modify a widget. Include attribute editor, style editor and animation editor.
 * Generate final code by javascript, Use `Blob` to save file.

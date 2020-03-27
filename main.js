@@ -12,6 +12,8 @@ window.onload = function() {
     editor_init(vm);
 
     document.title = "WALV: The Online Designer For LittlevGL";
+
+
 }
 
 
@@ -509,7 +511,7 @@ const pool_delete = (pool, list) => {
     }
 }
 
-
-window.onbeforeunload = function() {
-    alert("This page is asking you to confirm that you want to leave - data you have entered may not be saved.");
-}
+window.addEventListener('beforeunload', (event) => {
+    event.preventDefault();
+    event.returnValue = '';
+});

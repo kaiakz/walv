@@ -1,0 +1,244 @@
+<!doctype html>
+<!---->
+<html lang="en">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<head>
+		<style>
+			/* #mp_js_stdout {
+				display: inline-block;
+				max-width: 90%;
+				height: 20%;
+				max-height: 600px;
+				vertical-align: middle;
+			} */
+			/* body {
+				font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+			} */
+			[v-cloak] {
+				display: none;
+			}
+			#canvas {
+				border: 2px grey solid;
+				border-radius: 2px;
+				width: 600px;
+				height: 400px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+			}
+		</style>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.13.0/lib/theme-chalk/index.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/xterm.css" />
+		
+	</head>
+	<body>
+
+		<div id="walv" v-cloak>
+			<el-container>
+				<el-header style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04); margin: 0">
+					<el-menu class="el-menu-demo" mode="horizontal">
+						<el-menu-item index="1" active disabled><el-button type="danger" round>WALV</el-button></el-menu-item>
+						<el-submenu index="2">
+							<template slot="title">Help</template>
+							<el-menu-item index="2-1"><el-link href="https://docs.littlevgl.com/en/html/index.html" target="_blank">Docs</el-link></el-menu-item>
+							<el-menu-item index="2-2"><el-link href="https://github.com/kaiakz/walv/" target="_blank">github@kaiakz</el-link></el-menu-item>
+							<el-menu-item index="2-3">Comming Soon</el-menu-item>
+							<el-submenu index="2-4">
+							<template slot="title">Sites</template>
+							<el-menu-item index="2-4-1"><el-link href="https://littlevgl.com/" target="_blank">LittlevGL</el-link></el-menu-item>
+							<el-menu-item index="2-4-2"><el-link href="https://forum.littlevgl.com/" target="_blank">Forum</el-link></el-menu-item>
+							<el-menu-item index="2-4-3"><el-link href="https://github.com/alibaba/AliOS-Things/" target="_blank">AliOS-Things</el-link></el-menu-item>
+							</el-submenu>
+						</el-submenu>
+						<el-menu-item index="3" disabled>More</el-menu-item>
+						<el-menu-item>
+							<el-button icon="el-icon-camera-solid" @click="screenshot"></el-button>
+							<el-divider direction="vertical"></el-divider>
+						</el-menu-item>
+						<el-menu-item>
+							<el-switch v-model="is_c_mode" active-color="#13ce66" inactive-color="#ff4949" active-text="C" inactive-text="Python"></el-switch>
+						</el-menu-item>
+						<el-menu-item>
+							<el-button-group>
+								<el-button type="primary" round @click="code_generate">Generate</el-button>
+								<el-button type="success" round @click="code_export">Export</el-button>
+							  </el-button-group>
+						</el-menu-item>
+					</el-menu>
+				</el-header>
+
+				<el-container>
+					<el-aside width="17%">
+						<div style="margin-top: 20px;text-align: center">
+							<el-cascader :options="creator_options" :show-all-levels="false" :props="props" v-model="selected_type"></el-cascader>
+							<el-badge :value="WidgetNum" class="item">
+								<el-button type="primary" icon="el-icon-plus" @click="Creator" circle></el-button>
+							</el-badge>
+							<div style="margin: 15px;">
+								<el-row>
+									<el-tag>{{ CheckedNode.id }}</el-tag>
+									<el-button type="success" icon="el-icon-view"circle></el-button>	
+									<el-button type="warning" icon="el-icon-refresh-left" circle></el-button>
+									<el-button type="danger" icon="el-icon-delete" @click="delete_node" circle></el-button>									
+								</el-row>
+								<el-row style="margin-top: 15px">
+								</el-row>
+							</div>
+							<el-divider></el-divider>
+						</div>
+						<el-tree
+							ref="TreeView"
+							:data="widget_tree" highlight-current  default-expand-all @node-click="node_click_cb" >
+						</el-tree>
+					</el-aside>
+
+
+					<el-main>
+						<el-tabs type="border-card">
+							<el-tab-pane label="TFT Simulator">				
+								<div id="mp_js_stdout" style="text-align: center">
+									<canvas id="canvas" 
+										oncontextmenu="event.preventDefault()" 
+										onmousedown="this.style.cursor='move'" onmouseup="this.style.cursor='default'"
+										@mousemove="cursorXY"
+										tabindex="-1">
+									</canvas>
+								</div>
+							</el-tab-pane>
+							<el-tab-pane label="Code Editor">
+								<div id="code-editor" style="height: 420px"></div>
+							</el-tab-pane>
+							<el-tab-pane label="Project">
+								<el-calendar>
+								</el-calendar>								
+							</el-tab-pane>
+						</el-tabs>
+
+						<div style="margin: 18px">
+							<i class="el-icon-monitor">REPL Terminal</i>
+							<el-switch v-model="term_visible"></el-switch>
+							<el-button icon="el-icon-refresh" circle @click="refresh_repl"></el-button>
+							<i style="float: right;">X: {{cursorX}}, Y: {{cursorY}}</i>
+						</div>
+
+						<div id="mpy_repl" v-show="term_visible" style="height:270px"></div>
+					</el-main>
+
+
+					<el-aside width="17%">
+						<div style="margin-top : 20px">
+							<el-row>
+								<i class="el-icon-set-up"></i>
+								<el-button-group>
+									<el-button icon="el-icon-edit" @click="style_visible=true">Style</el-button>
+									<el-button icon="el-icon-edit">Animation</el-button>
+								</el-button-group>
+							</el-row>
+
+							<div style="margin: 20px;"></div>
+
+							<div id="setting_attribute">
+								<el-form ref="form" :model="currJSON" label-width="55px">
+										<el-form-item label="ID">
+											<el-col :span="10"><em> {{ currJSON.id }} </em></el-col>
+											<el-col :span="7">
+												<i class="el-icon-lock"></i><el-switch v-model="currJSON.drag" v-on:input="bind_widget_bool('drag')"></el-switch>
+											</el-col>
+											<el-col :span="7"><el-button type="warning" icon="el-icon-plus" @click="InfoPool_setCB(currJSON.id)">CB</el-button></el-col>
+										</el-form-item>
+										<el-form-item label="Postion">
+											<el-col :span="11">
+												<el-input placeholder="X" v-model="currJSON.x" v-on:input="bind_widget_num('x')">
+													<template slot="prepend">X</template>
+												</el-input>
+											</el-col>
+											<el-col class="line" :span="2">.</el-col>
+											<el-col :span="11">
+												<el-input placeholder="Y" v-model="currJSON.y"  v-on:input="bind_widget_num('y')">
+													<template slot="prepend">Y</template>
+												</el-input>
+											</el-col>
+										</el-form-item>									  
+									
+										<el-form-item label="Size">
+											<el-col :span="11">
+												<el-input placeholder="Width" v-model="currJSON.width"  v-on:input="bind_widget_num('width')">
+													<template slot="prepend">W</template>
+												</el-input>
+											</el-col>
+											<el-col class="line" :span="2">-</el-col>
+											<el-col :span="11">
+												<el-input placeholder="Height" v-model="currJSON.height" v-on:input="bind_widget_num('height')">
+													<template slot="prepend">H</template>
+												</el-input>
+											</el-col>
+										</el-form-item>
+
+										<el-form-item label="Other">
+											<el-col :span="12">
+												  DRAG<el-switch v-model="currJSON.drag" v-on:input="bind_widget_bool('drag')"></el-switch>
+											</el-col>
+											<el-col :span="12">
+												CLICK<el-switch v-model="currJSON.click" v-on:input="bind_widget_bool('click')"></el-switch>
+											</el-col>
+											<el-col :span="12">
+												HIDDEN<el-switch v-model="currJSON.hidden" v-on:input="bind_widget_bool('hidden')"></el-switch>
+											</el-col>
+											<el-col :span="12">
+												TOP<el-switch v-model="currJSON.top" v-on:input="bind_widget_bool('top')"></el-switch>
+											</el-col>
+										</el-form-item>
+
+										<el-divider></el-divider>
+								</el-form>
+							</div>
+
+							<el-drawer
+							title="Style Editor"
+							:visible.sync="style_visible"
+							direction="rtl"
+							size="20%"
+							@closed="make_style">
+								<el-form ref="form" :model="style" label-width="80px">
+									<h5>Body</h5>
+									<el-form-item label="main_color">
+										<el-color-picker v-model="style.body.main_color"></el-color-picker>
+									</el-form-item>
+									<h5>Text</h5>
+									<el-form-item label="color">
+										<el-color-picker v-model="style.text.color"></el-color-picker>
+									</el-form-item>
+									<el-form-item label="font">
+										<el-radio v-model="style.text.font" label="font_roboto_16">font_roboto_16</el-radio>
+										<el-radio v-model="style.text.font" label="font_roboto_28">font_roboto_28</el-radio>
+									</el-form-item>
+								</el-form>
+							</el-drawer>
+
+
+						</div>
+					</el-aside>
+				</el-container>
+
+			</el-container>
+		</div>
+
+		
+		<!-- scripts -->
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/element-ui@2.13.0/lib/index.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/element-ui@2.13.0/lib/umd/locale/en.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/xterm.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/xterm@3.14.1/dist/addons/fit/fit.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.6/ace.js" type="text/javascript" charset="utf-8"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.6/mode-c_cpp.js" type="text/javascript" charset="utf-8"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.6/mode-python.js" type="text/javascript" charset="utf-8"></script>
+		<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
+		<script src="lvgl_mp.js"></script>
+		<script src="data.js"></script>
+		<script src="main.js"></script>
+		<script src="template.js"></script>
+		<script src="wrapper.js"></script>
+		<script src="compiler.js"></script>
+	</body>
+</html>
+
