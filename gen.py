@@ -5,18 +5,20 @@
 import json
 
 Setter = {}
+path = '../lv_mpy_example.json'
 
-with open("lv_mpy.json") as f:
+with open(path) as f:
     data = json.load(f)
     objs = data['objects']
-    Setter['obj'] = objs['obj']['members']
     for o in objs:
+        print(o)
         tmp = {}
-        for fn in objs[o]['members']:
-            if fn.startswith('set_') and fn not in Setter['obj']:
+        for fn in objs[o]['members'].keys():
+            if fn.startswith('set_') and fn not in objs['obj']['members'].keys():
                 tmp[fn] = objs[o]['members'][fn]
         Setter[o] = tmp
+    # del Setter['obj']
 
-f = open('setter.json', 'w')
-json.dump(Setter, f)
-f.close()
+# f = open('setter.json', 'w')
+# json.dump(Setter, f)
+# f.close()

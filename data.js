@@ -67,7 +67,14 @@ const WidgetsOption = [
                 value: 'calendar',
                 label: "Calendar"
             },
-
+            {
+                value: 'lmeter',
+                label: "Line meter"
+            },
+            {
+                value: 'preload',
+                label: "Preloader"
+            }
         ]
     },
     {
@@ -85,6 +92,10 @@ const WidgetsOption = [
             {
                 value: 'win',
                 label: "Window"
+            },
+            {
+                value: 'mbox',
+                label: "Message box"
             }
         ]
     }
@@ -199,7 +210,7 @@ const Setter = {
         "text": "set_text",
     },
     "led": {
-        
+
     }
 }
 
