@@ -11,14 +11,17 @@ with open(path) as f:
     data = json.load(f)
     objs = data['objects']
     for o in objs:
-        print(o)
+        # print(o)
         tmp = {}
         for fn in objs[o]['members'].keys():
             if fn.startswith('set_') and fn not in objs['obj']['members'].keys():
-                tmp[fn] = objs[o]['members'][fn]
+                name = fn.replace('set_', '')
+                tmp[name] = objs[o]['members'][fn]
+                tmp[name]['api'] = fn
         Setter[o] = tmp
-    # del Setter['obj']
+    del Setter['obj']
 
-# f = open('setter.json', 'w')
-# json.dump(Setter, f)
-# f.close()
+f = open('apis.js', 'w')
+f.write("const setter = ");
+json.dump(Setter, f)
+f.close()

@@ -187,8 +187,10 @@
 												TOP<el-switch v-model="currJSON.top" v-on:input="bind_widget_bool('top')"></el-switch>
 											</el-col>
 										</el-form-item>
-
 										<el-divider></el-divider>
+										<div class="height: 200px">
+											<p v-for="method in setter.btn"> {{method}} <input type="text"></p>
+										</div>
 								</el-form>
 							</div>
 
@@ -235,6 +237,7 @@
 		<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
 		<script src="lvgl_mp.js"></script>
 		<script src="data.js"></script>
+		<script src="apis.js"></script>
 		<script src="main.js"></script>
 		<script src="template.js"></script>
 		<script src="wrapper.js"></script>

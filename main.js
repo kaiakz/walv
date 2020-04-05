@@ -112,6 +112,8 @@ const WALV_MAIN = {
         WidgetPool: {},
         InfoPool: {},
 
+        setter: setter,
+
         //Simulator
         cursorX: 0,
         cursorY: 0,
