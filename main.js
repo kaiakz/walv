@@ -141,6 +141,7 @@ const WALV_MAIN = {
         CheckedNode: {
             id: null,
             obj: null,
+            type: null,
         },
 
         //Terminal
@@ -308,7 +309,8 @@ const WALV_MAIN = {
 
             // Clear this.CheckedNode
             this.CheckedNode.obj = null;
-            this.CheckedNode.id = null
+            this.CheckedNode.id = null;
+            this.CheckedNode.type = null;
 
             // Remove the related info
             pool_delete(this.WidgetPool, record);
@@ -331,12 +333,16 @@ const WALV_MAIN = {
             if (id == "") {// NOTICE
                 return;
             }
+            // If WidgetPool doesn't has infomation of the widget
             if (this.WidgetPool[id] == undefined) {
                 let type = "\'obj\'";
                 if (id != "screen") {
                     type = this.InfoPool[id]['type'];
                 }
                 wrap_query_attr(id, type);
+            }
+            if (id != 'screen') {
+                this.CheckedNode.type = this.InfoPool[id]['type'];   // TODO
             }
             this.currJSON = this.WidgetPool[id];
         },
