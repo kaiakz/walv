@@ -19,7 +19,7 @@ with open(path) as f:
                 tmp[name] = objs[o]['members'][fn]
                 tmp[name]['api'] = fn
         Setter[o] = tmp
-    del Setter['obj']
+    # del Setter['obj']
 
 f = open('apis.js', 'w')
 f.write("const setter = ");

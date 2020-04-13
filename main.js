@@ -6,10 +6,10 @@ window.onload = function() {
     vm = new Vue(WALV_MAIN);
 
     /* Initialize the wasm mpy */
-    mpylv_init(vm);
+    mpylvInit(vm);
 
     /* Initialize the ace editor */
-    editor_init(vm);
+    editorInit(vm);
 
     document.title = "WALV: The Online Designer For LittlevGL";
 
@@ -18,7 +18,7 @@ window.onload = function() {
 
 
 
-const mpylv_init = (vm) => {
+const mpylvInit = (vm) => {
 
     Module.canvas = document.getElementById("canvas");
 
@@ -44,7 +44,7 @@ const mpylv_init = (vm) => {
     /*Setup printing event handler*/
     mp_js_stdout.addEventListener('print', function(e) {
         // console.log(e.data);
-        term.write(vm.handle_stdout(e.data));
+        term.write(vm.handleOutput(e.data));
     }, false);
 
     /*Setup key input handler */
@@ -78,7 +78,7 @@ const mpylv_init = (vm) => {
 }
 
 // Init the ace editor
-const editor_init = (vm) => {
+const editorInit = (vm) => {
     let editor = ace.edit("code-editor");
     editor.getSession().setUseWrapMode(true);
     editor.setAutoScrollEditorIntoView(true);
@@ -107,7 +107,7 @@ const WALV_MAIN = {
         buffer: [],
         str_json: "",
         mask: false,
-        currJSON: {},   // The Attributes
+        currentWidget: {},   // The Attributes
         posJSON: {},
         WidgetPool: {},
         InfoPool: {},
@@ -121,8 +121,8 @@ const WALV_MAIN = {
         //Creator
         creator_options: WidgetsOption,
         props: {emitPath: false, expandTrigger: 'hover'},
-        selected_type: "",
-        WidgetNum: 0,
+        selectedType: "",
+        widgetNum: 0,
         Count: 0,
 
         //TreeView
@@ -138,10 +138,10 @@ const WALV_MAIN = {
             }
         ],
         // Which node in TreeView was checked
-        CheckedNode: {
+        checkedNode: {
             id: null,
             obj: null,
-            type: null,
+            // type: null,  // DEPRECATED
         },
 
         //Terminal
@@ -181,15 +181,15 @@ const WALV_MAIN = {
                     this.WidgetPool[tmp['id']]['x'] = this.posJSON['x'];
                     this.WidgetPool[tmp['id']]['y'] = this.posJSON['y'];
 
-                    this.InfoPool_modify(tmp['id'], 'x');
-                    this.InfoPool_modify(tmp['id'], 'y');
+                    this.changeInfo(tmp['id'], 'x');
+                    this.changeInfo(tmp['id'], 'y');
 
-                    this.currJSON = this.WidgetPool[tmp['id']];
+                    this.currentWidget = this.WidgetPool[tmp['id']];
 
-                    this.draw_rect(this.currJSON.x, this.currJSON.y, this.currJSON.width, this.currJSON.height);
+                    this.drawRect(this.currentWidget.x, this.currentWidget.y, this.currentWidget.width, this.currentWidget.height);
                 } else {
                     this.WidgetPool[tmp['id']] = tmp;
-                    this.currJSON = this.WidgetPool[tmp['id']];
+                    this.currentWidget = this.WidgetPool[tmp['id']];
                 }
             } catch (error) {
                 alert(error);
@@ -200,7 +200,7 @@ const WALV_MAIN = {
 
     methods: {
         // Handle the information(strats with \x06, end with \x15)
-        handle_stdout: function(text) {
+        handleOutput: function(text) {
             if(text == '\x15')      //End: '\x15'
             {
                 this.mask = false;
@@ -224,14 +224,14 @@ const WALV_MAIN = {
         },
 
         Creator: function() {
-            if (this.selected_type == "") {
+            if (this.selectedType == "") {
                 this.$message({
                     message: 'Please select a type',
                     type: 'error'
                 });
                 return;
             } else {
-                let parent_id = this.get_curr_id();
+                let parent_id = this.getCurrentID();
                 if (parent_id === null) {
                     this.$message({
                         message: 'You must choose a widget!',
@@ -246,35 +246,35 @@ const WALV_MAIN = {
                     });
 
                 }
-                this.CreateWidget(this.selected_type, parent_id);
+                this.createWidget(this.selectedType, parent_id);
             }
         },
 
         //Parametres are the String type
-        CreateWidget: function(type, strPar) {
+        createWidget: function(type, strPar) {
             var id = this.makeID(type);
             var par = strPar;
 
             wrap_create(id, par, type);
 
             //TODO: BUG
-            this.append_node(id);
+            this.appendNode(id);
 
             //** walv saves the inital info to WidgetPool && InfoPool
 
             //Store Info that a widget was created from.
-            this.InfoPool_add(id, par, type);
+            this.addInfo(id, par, type);
         },
 
         // Increase by 1
         makeID: function(type) {
             let id = type + (this.Count++).toString(16);
-            this.WidgetNum += 1;
+            this.widgetNum += 1;
             return id;
         },
 
         // Append new node to TreeView
-        append_node(widget_name) {
+        appendNode(widget_name) {
             let new_child = {
                 label: widget_name,
                 children: [] };
@@ -285,9 +285,9 @@ const WALV_MAIN = {
         },
 
         // Delete node and its childs(reverse)
-        delete_node: function() {
-            const node = this.CheckedNode.obj;
-            const id = this.CheckedNode.id;
+        deleteNode: function() {
+            const node = this.checkedNode.obj;
+            const id = this.checkedNode.id;
 
             if (id == "screen" || id == "") {
                 this.$message({
@@ -305,17 +305,16 @@ const WALV_MAIN = {
             const index = children.findIndex(d => d.label === id);
             wrap_delete(id);
             children.splice(index, 1);
-            this.WidgetNum -= record.length;
+            this.widgetNum -= record.length;
 
-            // Clear this.CheckedNode
-            this.CheckedNode.obj = null;
-            this.CheckedNode.id = null;
-            this.CheckedNode.type = null;
+            // Clear this.checkedNode
+            this.checkedNode.obj = null;
+            this.checkedNode.id = null;
 
             // Remove the related info
             pool_delete(this.WidgetPool, record);
             pool_delete(this.InfoPool, record);
-            this.currJSON = this.WidgetPool['screen'];
+            this.currentWidget = this.WidgetPool['screen'];
 
             this.$message({
                 message: 'Delete sucessfully',
@@ -323,11 +322,11 @@ const WALV_MAIN = {
             });
         },
 
-        // When the node is clicked, walv will: change the CheckedNode, set new id for label, update the Setting
+        // When the node is clicked, walv will: change the checkedNode, set new id for label, update the Setting
         // https://element.eleme.cn/#/en-US/component/tree
-        node_click_cb: function(data, obj, tree_obj) {
-            this.CheckedNode.id = data.label;
-            this.CheckedNode.obj = obj;
+        clickNode: function(data, obj, tree_obj) {
+            this.checkedNode.id = data.label;
+            this.checkedNode.obj = obj;
 
             let id = data.label;
             if (id == "") {// NOTICE
@@ -341,10 +340,10 @@ const WALV_MAIN = {
                 }
                 wrap_query_attr(id, type);
             }
-            if (id != 'screen') {
-                this.CheckedNode.type = this.InfoPool[id]['type'];   // TODO
-            }
-            this.currJSON = this.WidgetPool[id];
+            // if (id != 'screen') {
+            //     this.checkedNode.type = this.InfoPool[id]['type'];   // TODO
+            // } DEPRECATED
+            this.currentWidget = this.WidgetPool[id];
         },
 
         // Update the X & Y below the Simulator
@@ -354,8 +353,8 @@ const WALV_MAIN = {
         },
 
         // Get the id of recently checked node
-        get_curr_id: function() {
-            return this.CheckedNode.id;
+        getCurrentID: function() {
+            return this.checkedNode.id;
             // node = this.$refs.TreeView.getCurrentNode()
             // if (node != null) {
             //     return node.label;
@@ -365,37 +364,37 @@ const WALV_MAIN = {
 
         // Lock the widget, so it can't move anymore
         // lock_widget: function() {
-        //     let drag_state = this.currJSON["get_drag"];
+        //     let drag_state = this.currentWidget["get_drag"];
         //     if(drag_state == true) {
         //         drag_state = "True";
         //     } else {
         //         drag_state = "False";
         //     }
 
-        //     mp_js_do_str(this.currJSON["id"] + ".set_drag(" + drag_state + ')');
+        //     mp_js_do_str(this.currentWidget["id"] + ".set_drag(" + drag_state + ')');
         // },
 
 
         // Apply change to the widget: number
-        bind_widget_num: function(attribute) {
+        bindWidgetNumerical: function(attribute) {
 
-            let value = this.currJSON[attribute];
+            let value = this.currentWidget[attribute];
 
             if(value == null) {
                 value = 0;
             }
 
-            let id = this.currJSON["id"];
+            let id = this.currentWidget["id"];
 
             wrap_simple_setter(id, attribute, value);
 
-            this.InfoPool_modify(id, attribute);
+            this.changeInfo(id, attribute);
         },
 
         // Apply change to the widget: boolean
-        bind_widget_bool: function(attribute) {
+        bindWidgetBool: function(attribute) {
 
-            let value = this.currJSON[attribute];
+            let value = this.currentWidget[attribute];
 
             if(value == true) {
                 value = "True"
@@ -403,15 +402,15 @@ const WALV_MAIN = {
                 value = "False"
             }
 
-            let id = this.currJSON["id"];
+            let id = this.currentWidget["id"];
 
             wrap_simple_setter(id, attribute, value);
 
-            this.InfoPool_reverse(id, attribute);
+            this.reverseInfo(id, attribute);
         },
 
         // Add some information for the new widget to InfoPool
-        InfoPool_add: function(id, par_name, type) {
+        addInfo: function(id, par_name, type) {
             let info = {
                 type: type,
                 parent: par_name,
@@ -422,7 +421,7 @@ const WALV_MAIN = {
         },
 
         // For text or number
-        InfoPool_modify: function(id, attribute_name) {
+        changeInfo: function(id, attribute_name) {
             let index = this.InfoPool[id].attributes.indexOf(attribute_name);
             if (index == -1) {
                 this.InfoPool[id].attributes.push(attribute_name);
@@ -430,7 +429,7 @@ const WALV_MAIN = {
         },
 
         //For boolean only
-        InfoPool_reverse: function(id, attribute_name) {
+        reverseInfo: function(id, attribute_name) {
             let index = this.InfoPool[id].attributes.indexOf(attribute_name);
             if (index != -1) {
                 this.InfoPool[id].attributes.splice(index, 1);
@@ -440,11 +439,11 @@ const WALV_MAIN = {
         },
 
         // User enable CallBack template
-        InfoPool_setCB: function(id) {
+        enableCBInfo: function(id) {
             this.InfoPool[id].cb = true;
         },
 
-        refresh_repl: function() {
+        refreshTerm: function() {
             this.Term.clear();
             this.Term.write("\r\x1b[K>>> ");
         },
@@ -457,7 +456,7 @@ const WALV_MAIN = {
         },
 
         // Generate the code and print them to the editor.
-        code_generate: function() {
+        generateCode: function() {
             let preview_code = "";
             if (this.is_c_mode) {
                 preview_code = c_generator(this.InfoPool, this.WidgetPool);
@@ -472,7 +471,7 @@ const WALV_MAIN = {
         },
 
         // Export the code in editor as a file.
-        code_export: function() {
+        exportCodeAsFile: function() {
             let code = this.editor.getValue();
             this.$message({
                 message: 'Export file sucessfully',
@@ -487,12 +486,12 @@ const WALV_MAIN = {
         },
 
         // Set the style
-        make_style: function() {
-            wrap_simple_style(this.currJSON["id"], this.style);
+        makeStyle: function() {
+            wrap_simple_style(this.currentWidget["id"], this.style);
         },
 
         //Highlight object
-        draw_rect: (x, y, w, h) => {
+        drawRect: (x, y, w, h) => {
             let ctx = document.getElementById("canvas").getContext("2d");
             ctx.strokeStyle="red";
             ctx.lineWidth = 2;
