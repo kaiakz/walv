@@ -51,6 +51,14 @@ const color_convert = (color) => {
     return color.replace("#", "0x")
 }
 
+const wrap_setter = (id, type, name, params, database) => {
+    // params is a list
+    let api = database[type][name]['api']; // "fit": {"return_type": "NoneType", "args": [{"type": "object", "name": "cont"}, {"type": "int", "name": "fit"}], "type": "function", "api": "set_fit"}
+    let args = database[type][name]['args'];
+    let code = `${id}.${api}(${params.toString()})`;
+    mp_js_do_str(code);
+}
+
 const wrap_simple_style = (id, style) => {
     let s = style.text;
     let code = [
