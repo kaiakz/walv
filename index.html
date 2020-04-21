@@ -189,7 +189,7 @@
 										</el-form-item>
 										<el-divider></el-divider>
 										<div style="height: 450px; overflow:scroll;">
-											<p v-for="(body, method) in setter[checkedNode.type]"> {{method}} <input type="text"></p>
+											<p v-for="(body, method) in setter[currentType]"> {{method}} <input type="text" v-for="arg in body.args" v-on:input="bindWidgetSpecial(arg)"></p>
 										</div>
 								</el-form>
 							</div>

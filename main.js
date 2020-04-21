@@ -113,6 +113,7 @@ const WALV_MAIN = {
         InfoPool: {},
 
         setter: setter,
+        currentType: null,
 
         //Simulator
         cursorX: 0,
@@ -184,7 +185,9 @@ const WALV_MAIN = {
                     this.changeInfo(tmp['id'], 'x');
                     this.changeInfo(tmp['id'], 'y');
 
+                    // Change the Setting to show the widget that was just moved.
                     this.currentWidget = this.WidgetPool[tmp['id']];
+                    this.currentType = this.InfoPool[tmp['id']]['type'];
 
                     this.drawRect(this.currentWidget.x, this.currentWidget.y, this.currentWidget.width, this.currentWidget.height);
                 } else {
@@ -264,6 +267,9 @@ const WALV_MAIN = {
 
             //Store Info that a widget was created from.
             this.addInfo(id, par, type);
+
+            // Change currentType, walv will render new input for setters
+            this.currentType = type;
         },
 
         // Increase by 1
@@ -409,6 +415,10 @@ const WALV_MAIN = {
             this.reverseInfo(id, attribute);
         },
 
+        bindWidgetSpecial: function(params) {
+            console.log(params);
+        },
+
         // Add some information for the new widget to InfoPool
         addInfo: function(id, par_name, type) {
             let info = {
@@ -420,7 +430,7 @@ const WALV_MAIN = {
             this.InfoPool[id] = info;
         },
 
-        // For text or number
+        // For text or number, save something in InfoPool
         changeInfo: function(id, attribute_name) {
             let index = this.InfoPool[id].attributes.indexOf(attribute_name);
             if (index == -1) {
@@ -428,7 +438,7 @@ const WALV_MAIN = {
             }
         },
 
-        //For boolean only
+        // For boolean only, save something in InfoPool
         reverseInfo: function(id, attribute_name) {
             let index = this.InfoPool[id].attributes.indexOf(attribute_name);
             if (index != -1) {

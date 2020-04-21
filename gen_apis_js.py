@@ -18,9 +18,11 @@ with open(path) as f:
                 name = fn.replace('set_', '')
                 tmp[name] = objs[o]['members'][fn]
                 tmp[name]['api'] = fn
+                del tmp[name]['args'][0]    # The first argument is about type
         Setter[o] = tmp
     # del Setter['obj']
 
+# We also need to add 'null:{}' in apis.js
 f = open('apis.js', 'w')
 f.write("const setter = ");
 json.dump(Setter, f)
