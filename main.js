@@ -354,8 +354,8 @@ const WALV_MAIN = {
 
         // Update the X & Y below the Simulator
         cursorXY : function(event) {
-            this.cursorX = event.offsetX;
-            this.cursorY = event.offsetY;
+            this.cursorX = 0 | (event.offsetX / 1.25);
+            this.cursorY = 0 | (event.offsetY / 1.25);
         },
 
         // Get the id of recently checked node
