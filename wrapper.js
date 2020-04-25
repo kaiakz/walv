@@ -42,10 +42,6 @@ const wrap_simple_setter = (id, attr, param) => {
     mp_js_do_str(`${id}.set_${attr}(${param})`);
 }
 
-const wrap_refresh = () => {
-
-}
-
 // Convert '#ffffff' to '0xffffff'
 const color_convert = (color) => {
     return color.replace("#", "0x")
@@ -56,6 +52,12 @@ const wrap_setter = (id, type, name, params, database) => {
     let api = database[type][name]['api']; // "fit": {"return_type": "NoneType", "args": [{"type": "object", "name": "cont"}, {"type": "int", "name": "fit"}], "type": "function", "api": "set_fit"}
     let args = database[type][name]['args'];
     let code = `${id}.${api}(${params.toString()})`;
+    mp_js_do_str(code);
+}
+
+const wrap_setter_str = (id, api, params) => {
+    // params is a string
+    let code = `${id}.${api}(${params})`;
     mp_js_do_str(code);
 }
 

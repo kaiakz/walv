@@ -415,8 +415,14 @@ const WALV_MAIN = {
             this.reverseInfo(id, attribute);
         },
 
-        bindWidgetSpecial: function(params) {
-            console.log(params);
+        bindWidgetSpecial: function(e, f) {
+            let id = this.currentWidget["id"];
+            let api = f['api'];
+            let params = e.target.value;
+            if(params == "") {  // If input nothing
+                return;
+            }
+            wrap_setter_str(id, api, params);
         },
 
         // Add some information for the new widget to InfoPool
@@ -507,6 +513,15 @@ const WALV_MAIN = {
             ctx.lineWidth = 2;
             ctx.setLineDash([5,5]);
             ctx.strokeRect(x, y, w, h);
+        },
+
+        // arguments
+        setArgs: (args) => {
+            li = [];
+            for (const i of args) {
+                li.push(i["type"])
+            }
+            return li.toString();
         }
     },
 }
