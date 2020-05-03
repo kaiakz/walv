@@ -120,7 +120,7 @@
 								<i class="el-icon-monitor">REPL Terminal</i>
 								<el-switch v-model="term_visible"></el-switch>
 								<el-button icon="el-icon-refresh" circle @click="refreshTerm"></el-button>
-								<i style="float: right;">X: {{cursorX}}, Y: {{cursorY}}</i>
+								<i style="float: right;">X: {{cursorX}}, Y: {{cursorY}}    Size: 480x320</i>
 							</div>
 
 							<div id="mpy_repl" v-show="term_visible" style="height:270px"></div>
@@ -200,6 +200,9 @@
 												</el-cow>
 											</el-form-item>
 											<el-divider></el-divider>
+											<div style="height: 450px; overflow:scroll;">
+												<p v-for="(body, method) in setter[currentType]"> {{ method }}({{ setArgs(body.args) }}) <input type="text" v-on:input="bindWidgetSpecial($event, body)"></p>
+											</div>
 									</el-form>
 								</div>
 
