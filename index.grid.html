@@ -70,7 +70,7 @@
 					  </el-row>
 				</el-header>
 				<el-main>
-					<el-cow>
+					<el-row>
 						<el-col :span="5">
 							<div style="margin-top: 20px;text-align: center">
 								<el-cascader :options="creator_options" :show-all-levels="false" :props="props" v-model="selectedType"></el-cascader>
@@ -142,13 +142,13 @@
 								<div id="setting_attribute">
 									<el-form ref="form" :model="currentWidget" label-width="55px">
 											<el-form-item label="ID">
-												<el-cow>
+												<el-row>
 													<el-col :span="10"><em> {{ currentWidget.id }} </em></el-col>
 													<el-col :span="7">
 														<i class="el-icon-lock"></i><el-switch v-model="currentWidget.drag" v-on:input="bindWidgetBool('drag')"></el-switch>
 													</el-col>
 													<el-col :span="7"><el-button type="warning" icon="el-icon-plus" @click="enableCBInfo(currentWidget.id)">CB</el-button></el-col>												
-												</el-cow>
+												</el-row>
 											</el-form-item>
 											<el-form-item label="Postion">
 												<el-row>
@@ -168,7 +168,7 @@
 											</el-form-item>									  
 										
 											<el-form-item label="Size">
-												<el-cow>
+												<el-row>
 													<el-col :span="11">
 														<el-input placeholder="Width" v-model="currentWidget.width"  v-on:input="bindWidgetNumerical('width')">
 															<template slot="prepend">W</template>
@@ -180,11 +180,11 @@
 															<template slot="prepend">H</template>
 														</el-input>
 													</el-col>												
-												</el-cow>
+												</el-row>
 											</el-form-item>
 
 											<el-form-item label="Other">
-												<el-cow>
+												<el-row>
 													<el-col :span="12">
 														DRAG<el-switch v-model="currentWidget.drag" v-on:input="bindWidgetBool('drag')"></el-switch>
 													</el-col>
@@ -197,7 +197,7 @@
 													<el-col :span="12">
 														TOP<el-switch v-model="currentWidget.top" v-on:input="bindWidgetBool('top')"></el-switch>
 													</el-col>												
-												</el-cow>
+												</el-row>
 											</el-form-item>
 											<el-divider></el-divider>
 											<div style="height: 450px; overflow:scroll;">
@@ -229,7 +229,7 @@
 								</el-drawer>
 							</div>
 						</el-col>
-					</el-cow>					
+					</el-row>					
 				</el-main>
 
 
@@ -250,6 +250,7 @@
 		<script src="lvgl_mp.js"></script>
 		<script src="data.js"></script>
 		<script src="apis.js"></script>
+		<script src="utils.js"></script>
 		<script src="main.js"></script>
 		<script src="template.js"></script>
 		<script src="wrapper.js"></script>

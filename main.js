@@ -515,32 +515,10 @@ const WALV_MAIN = {
             ctx.strokeRect(x, y, w, h);
         },
 
-        // arguments
         setArgs: (args) => {
-            li = [];
-            for (const i of args) {
-                li.push(i["type"])
-            }
-            return li.toString();
-        }
+            return setArgvs(args);
+        } 
     },
-}
-
-
-const reverse_del_node = (node, record) => {
-    let childs = node.children;
-    for (const iter of childs) {
-        reverse_del_node(iter, record);
-        wrap_delete(iter.label);
-        record.push(iter.label);
-    }
-    childs.splice(0, childs.length);
-}
-
-const pool_delete = (pool, list) => {
-    for (const i of list) {
-        delete pool[i];
-    }
 }
 
 window.addEventListener('beforeunload', (event) => {
