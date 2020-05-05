@@ -16,22 +16,43 @@ const pool_delete = (pool, list) => {
 
 // arguments
 const setArgvs = (args) => {
-    li = [];
+    let li = [];
     for (const i of args) {
-        li.push(i["type"])
+        li.push(i["name"])
     }
     return li.toString();
 }
 
-Vue.component('lvgl-setters', {
-    props: ['setters'],
+Vue.component('lvgl-setter', {
+    props: ['name', 'body'],
     data: function() {
         return {
-            args: [],
+            args: {},
         }
     },
-    method: {
+    methods: {
+        checkArgs: function() {
+            let li = [];
+            for (const arg of this.args) {
+                if (arg['value'] == "") {
+                    return
+                }
+                if (arg['type'] == "str") {
+                    li.push(`"${arg['value']}"`);
+                } else {
+                    li.push(arg.value);
+                }
+                // TODO: We can check each value's type here
+            }
+            console.log(li.toString());
+        },
 
     },
-    template: '<p v-for="(body, method) in setters"> {{ method }}({{ setArgs(body.args) }}) <input type="text" v-on:input="bindWidgetSpecial($event, body)"></p>'
+    created() {
+        this.args = this.body.args;   
+        for (const arg of this.args) {
+            arg['value'] = '';      // args: [{"name": '', "type": '', "value": ''}]
+        }
+    },
+    template: '<span> {{ name }} (<small v-for="arg in args">{{arg.name}}:<input type="text" style="width: 35px"  v-model="arg.value" v-bind:placeholder="arg.type" v-on:input="checkArgs()"/>,</small>)</span>'
 })
