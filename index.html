@@ -149,32 +149,26 @@
 										</el-form-item>
 										<el-form-item label="Postion">
 											<el-row>
-												<el-col :span="11">
-													<el-input placeholder="X" v-model="currentWidget.x" v-on:input="bindWidgetNumerical('x')">
-														<template slot="prepend">X</template>
-													</el-input>
+												<el-col :span="2"><strong>X:</strong></el-col>
+												<el-col :span="10">
+													<el-input placeholder="X" v-model="currentWidget.x" v-on:input="bindWidgetNumerical('x')"></el-input>
 												</el-col>
-												<el-col class="line" :span="2">.</el-col>
-												<el-col :span="11">
-													<el-input placeholder="Y" v-model="currentWidget.y"  v-on:input="bindWidgetNumerical('y')">
-														<template slot="prepend">Y</template>
-													</el-input>
+												<el-col :span="2"><strong>Y:</strong></el-col>
+												<el-col :span="10">
+													<el-input placeholder="Y" v-model="currentWidget.y"  v-on:input="bindWidgetNumerical('y')"></el-input>
 												</el-col>												
 											</el-row>
 										</el-form-item>									  
 									
 										<el-form-item label="Size">
 											<el-row>
-												<el-col :span="11">
-													<el-input placeholder="Width" v-model="currentWidget.width"  v-on:input="bindWidgetNumerical('width')">
-														<template slot="prepend">W</template>
-													</el-input>
+												<el-col :span="2"><strong>W:</strong></el-col>
+												<el-col :span="10">
+													<el-input placeholder="Width" v-model="currentWidget.width"  v-on:input="bindWidgetNumerical('width')"></el-input>
 												</el-col>
-												<el-col class="line" :span="2">-</el-col>
-												<el-col :span="11">
-													<el-input placeholder="Height" v-model="currentWidget.height" v-on:input="bindWidgetNumerical('height')">
-														<template slot="prepend">H</template>
-													</el-input>
+												<el-col :span="2"><strong>H:</strong></el-col>
+												<el-col :span="10">
+													<el-input placeholder="Height" v-model="currentWidget.height" v-on:input="bindWidgetNumerical('height')"></el-input>
 												</el-col>												
 											</el-row>
 										</el-form-item>
@@ -199,7 +193,7 @@
 										</el-form-item>
 										<el-divider></el-divider>
 										<div style="height: 450px; overflow:scroll;">
-											<p v-for="(body, method) in setter[currentType]"> {{ method }}({{ setArgs(body.args) }}) <input type="text" v-on:input="bindWidgetSpecial($event, body)"></p>
+											<p v-for="(body, name) in setter[currentType]"> {{ name }}({{ setArgs(body.args) }}) <input type="text" v-on:input="bindWidgetSpecial($event, body)"></p>
 										</div>
 								</el-form>
 							</div>
