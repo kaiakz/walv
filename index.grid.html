@@ -200,8 +200,8 @@
 												</el-row>
 											</el-form-item>
 											<el-divider></el-divider>
-											<div style="height: 450px; overflow:scroll;">
-												<p v-for="(body, name) in setter[currentType]"><lvgl-setter v-bind:id="currentWidget.id" v-bind:name="name" v-bind:body="body"></lvgl-setter></p>
+											<div style="height: 450px; overflow:scroll;" >
+												<div v-for="(body, name) in setter[currentType]"><lvgl-setter v-bind:id="currentWidget.id" v-bind:name="name" v-bind:body="body"></lvgl-setter></div>
 											</div>
 									</el-form>
 								</div>

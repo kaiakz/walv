@@ -193,7 +193,7 @@
 										</el-form-item>
 										<el-divider></el-divider>
 										<div style="height: 450px; overflow:scroll;">
-											<p v-for="(body, name) in setter[currentType]"> {{ name }}({{ setArgs(body.args) }}) <input type="text" v-on:input="bindWidgetSpecial($event, body)"></p>
+											<div v-for="(body, name) in setter[currentType]"><lvgl-setter v-bind:id="currentWidget.id" v-bind:name="name" v-bind:body="body"></lvgl-setter></div>
 										</div>
 								</el-form>
 							</div>

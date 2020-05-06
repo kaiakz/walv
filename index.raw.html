@@ -189,7 +189,7 @@
 										</el-form-item>
 										<el-divider></el-divider>
 										<div style="height: 450px; overflow:scroll;">
-											<p v-for="(body, name) in setter.btn"> {{name}} <input type="text"></p>
+											<p v-for="(body, name) in setter[currentType]"> {{ name }}({{ setArgs(body.args) }}) <input type="text" v-on:input="bindWidgetSpecial($event, body)"></p>
 										</div>
 								</el-form>
 							</div>
