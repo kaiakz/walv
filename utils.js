@@ -16,42 +16,50 @@ const pool_delete = (pool, list) => {
 
 // arguments
 const setArgvs = (args) => {
-    let li = [];
+    let args_list = [];
     for (const i of args) {
-        li.push(i["name"])
+        args_list.push(i["name"])
     }
-    return li.toString();
+    return args_list.toString();
 }
 
 Vue.component('lvgl-setter', {
-    props: ['name', 'body'],
+    props: ['id', 'name', 'body'],
     data: function() {
         return {
-            args: {},
+            args: [],
         }
     },
     methods: {
         checkArgs: function() {
-            let li = [];
+            let args_list = [];
             for (const arg of this.args) {
                 if (arg['value'] == "") {
                     return
                 }
                 if (arg['type'] == "str") {
-                    li.push(`"${arg['value']}"`);
+                    args_list.push(`"${arg['value']}"`);
                 } else {
-                    li.push(arg.value);
+                    args_list.push(arg.value);
                 }
                 // TODO: We can check each value's type here
             }
-            console.log(li.toString());
+            wrap_setter_str(this.id, this.body.api, args_list.toString());
         },
-
     },
+    // TODO: Rewrite created && beforeUpdate
     created() {
-        this.args = this.body.args;   
-        for (const arg of this.args) {
-            arg['value'] = '';      // args: [{"name": '', "type": '', "value": ''}]
+        for (const arg of this.body.args) {
+            arg['value'] = "";      // args: [{"name": '', "type": '', "value": ''}]
+            this.args.push(arg);
+        }
+    },
+    // Why we need beforeUpdate: https://vuejs.org/v2/guide/list.html#Maintaining-State. If template was rendered by other, Vue won't excute created but beforeUpdate
+    beforeUpdate() {
+        this.args.splice(0, this.args.length);
+        for (const arg of this.body.args) {
+            arg['value'] = "";
+            this.args.push(arg);
         }
     },
     template: '<span> {{ name }} (<small v-for="arg in args">{{arg.name}}:<input type="text" style="width: 35px"  v-model="arg.value" v-bind:placeholder="arg.type" v-on:input="checkArgs()"/>,</small>)</span>'
