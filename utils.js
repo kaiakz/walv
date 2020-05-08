@@ -34,16 +34,23 @@ Vue.component('lvgl-setter', {
         checkArgs: function() {
             let args_list = [];
             for (const arg of this.args) {
-                if (arg['value'] == "") {
+                if (arg['value'] === "") {
                     return
                 }
-                if (arg['type'] == "str") {
+                if (arg['type'] === "str") {
                     args_list.push(`"${arg['value']}"`);
+                } else if (arg['type'] === "bool") {
+                    if (arg['value'] === true) {
+                        args_list.push("True");
+                    } else {
+                        args_list.push("False");
+                    }
                 } else {
                     args_list.push(arg.value);
                 }
                 // TODO: We can check each value's type here
             }
+            console.log(args_list.toString());
             wrap_setter_str(this.id, this.body.api, args_list.toString());
         },
     },
@@ -62,5 +69,5 @@ Vue.component('lvgl-setter', {
             this.args.push(arg);
         }
     },
-    template: '<span> {{ name }} (<small v-for="arg in args">{{arg.name}}:<input type="text" style="width: 35px"  v-model="arg.value" v-bind:placeholder="arg.type" v-on:input="checkArgs()"/>,</small>)</span>'
+    template: '<span> {{ name }} (<small v-for="arg in args">{{arg.name}}:<input type="checkbox" v-if="arg.type === `bool`" v-model="arg.value" v-on:input="checkArgs()"/> <input type="text" style="width: 35px" v-else v-model="arg.value" v-bind:placeholder="arg.type" v-on:input="checkArgs()"/>,</small>)</span>'
 })
