@@ -55,6 +55,10 @@ const wrap_setter = (id, type, name, params, database) => {
     mp_js_do_str(code);
 }
 
+const wrap_align = (id, ref_id, offset_x, offset_y) => {
+    mp_js_do_str(`${id}.align(${ref_id}, ${offset_x}, ${offset_y})`);
+}
+
 const wrap_setter_str = (id, api, params) => {
     // params is a string
     let code = `${id}.${api}(${params})`;

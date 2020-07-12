@@ -69,4 +69,43 @@ Vue.component('lvgl-setter', {
         }
     },
     template: '<span> {{ name }} (<small v-for="arg in args">{{arg.name}}:<input type="checkbox" v-if="arg.type === `bool`" v-model="arg.value" v-on:change="checkArgs()"/> <input type="text" style="width: 35px" v-else v-model="arg.value" v-bind:placeholder="arg.type" v-on:input="checkArgs()"/>,</small>)</span>'
-})
+});
+
+// https://docs.littlevgl.com/en/html/object-types/obj.html
+// Vue.component('lvgl-layout', {
+//     props: ['id', 'x', 'y', 'align', 'obj_ref', 'x_shift', 'y_shift'],  // lv_obj_set_x, lv_obj_set_y, lv_obj_align(obj, obj_ref, LV_ALIGN_..., x_shift, y_shift)
+//     data: function() {
+//         return {
+//             x: 0,
+//             y: 0,
+//             align: "", 
+//         }
+//     },
+//     template: ''
+// });
+
+// TODO: Only support align to its parent now
+Vue.component('lvgl-align', {
+    props: ['id', 'ref_id'],
+    data: function() {
+        return {
+            align: '',
+            ref_obj: '',
+            x_shift: 0,
+            y_shift: 0,
+            options: [
+                '',                 'OUT_TOP_LEFT',     'OUT_TOP_MID',  'OUT_TOP_RIGHT', '', 0, 
+                'OUT_LEFT_TOP',     'IN_TOP_LEFT',      'IN_TOP_MID',   'IN_TOP_RIGHT', 'OUT_RIGHT_TOP', 0,
+                'OUT_LEFT_MID',     'IN_LEFT_MID',      'CENTER',        'IN_RIGHT_MID', 'OUT_RIGHT_MID', 0,
+                'OUT_LEFT_BOTTOM', 'IN_BOTTOM_LEFT',    'IN_BOTTOM_MID', 'IN_BOTTOM_RIGHT', 'OUT_RIGHT_BOTTOM', 0,
+                '',                 'OUT_BOTTOM_LEFT', 'OUT_BOTTOM_MID', 'OUT_BOTTOM_RIGHT', '', 0,
+            ]
+        }
+    },
+    watch: {
+        align: (type) => {
+            wrap_align(this.id, 'None', type, 0, 0);
+        }
+    },
+    template: '<div><p>{{align}}</p><span v-for="type in options"><input type="radio" v-bind:disabled="type === ``" v-if="type !== 0" v-bind:value="type" v-model="align"/><br v-else /></span></div>'
+});

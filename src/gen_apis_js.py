@@ -5,7 +5,7 @@
 import json
 
 Setter = {}
-path = '../lv_mpy_example.json'
+path = '../../lv_mpy_example.json'  # Path to lv_mpy_example.json
 
 with open(path) as f:
     data = json.load(f)
